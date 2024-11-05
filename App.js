@@ -1,20 +1,34 @@
+import { useState } from 'react';
+import HomeView from './components/HomeView';
+import { SafeAreaView, View, StyleSheet, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
+  const [imageView, setImageView] = useState(true);
+
+  const handlePress = (name) => {
+    setImageView(!imageView);
+    alert(`Me clickeaste ${name}`)
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <SafeAreaProvider>
+    <View style={styles.root}>
+      <StatusBar style="dark"/>
+    <HomeView handlePress={handlePress} />
     </View>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
+    backgroundColor: 'green',
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
-  },
+    alignItems: 'center',
+    backgroundColor: "#f7f7f7",
+
+  }
 });
+
