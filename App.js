@@ -5,12 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
-  const [imageView, setImageView] = useState(true);
 
-  const handlePress = (name) => {
-    setImageView(!imageView);
-    alert(`Me clickeaste ${name}`)
-  }
   return (
     <SafeAreaProvider>
     <View style={styles.root}>

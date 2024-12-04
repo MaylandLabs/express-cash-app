@@ -1,74 +1,35 @@
 import { StyleSheet, Text, View, Image, Button, FlatList, TextInput, ScrollView, Pressable, SafeAreaView } from 'react-native';
-import { useState, useEffect } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; 
+import { Link } from 'expo-router';
+import { Stack } from 'expo-router';
+import { styled } from 'nativewind';
 
+const StyledPressable = styled(Pressable);
 
+const HomeView = () => {
 
-const HomeView = ({handlePress, nombre, setNombre, imageView}) => {
-    const [posts, setPosts] = useState([])
-    const insets = useSafeAreaInsets();
-
-    useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-        .then(res => res.json())
-        .then(data => setPosts(data) )
-    },[])
     return(
-    <SafeAreaView style={[styles.safeArea,{ paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-    <View style={styles.container}>
-        <FlatList
-        data={posts}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
-            <View style={styles.container}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.description}>{item.body}</Text>
-                <Button
-                title="click"
-                onPress={() => handlePress(item.title)}
-                />
-            </View>
-        )}
+    
+     <View className="flex-1 pt-16 px-4 bg-[#055B72]">
+      <Stack.Screen options={{ headerShown: false }} />
+      <View className="flex-row items-center gap-2">
+        <View className="w-10 h-10 bg-[#044454] rounded-full">
+        </View>
+        <Text className="text-xl text-white">Hola, Felix</Text>
+      </View>
+      <View className="flex-1 mt-8 px-4 justify-between max-h-[312px] py-4 boder border-white rounded-lg">
+        <View>
+        <Text className="text-xs text-white">Pedi tu prestamo de hasta</Text>
+        <Text className="text-5xl text-white mt-4">$300.000</Text>
+        </View>
+        <StyledPressable className={`p-4 rounded-lg active:opacity-60 bg-[#79C72B]`}>
+          <Text className="text-center font-semibold text-sm text-[#055B72]">Pedi un prestamo</Text>
+        </StyledPressable>
 
-        />
-
-
-    </View>
-    </SafeAreaView>
+      </View>
+     </View>    
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-        flex: 1,
-        justifyContent: 'center',
-        gap: 10
-    },
-    containerScreen: {
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: "#000",
-    },
-    safeArea: {
-      flex: 1,
-      backgroundColor: 'transparent',
-    },
-    button: {
-      padding: 10,
-      backgroundColor: 'red',
-      borderRadius: 5,
-      marginBottom: 10
-    },
-    buttonPressed: {
-      backgroundColor: 'green',
-      opacity: 0.5,
-      padding: 20
-    },
-    title: {
-      fontSize: 30
-    },
-  
-  });
+
 
 export default HomeView
