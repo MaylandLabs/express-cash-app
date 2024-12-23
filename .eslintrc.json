@@ -1,0 +1,29 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020,
+    "allowImportExportEverywhere": true,
+    "codeFrame": true
+  },
+  "plugins": ["eslint-plugin-babel"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:babel/recommended"
+  ],
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "ignorePatterns": [".eslintrc.js"],
+  "rules": {
+    "linebreak-style": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  }
+}
