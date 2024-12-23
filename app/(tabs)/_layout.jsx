@@ -35,19 +35,19 @@ const TabsLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="index"        
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <View
               style={{
-                marginTop: 10,
-                alignItems: "center", 
+                marginTop: 30,
+                alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <Home
-                size={24}
+                size={34}
                 color={focused ? "#79C72B" : "white"}
                 strokeWidth={2}
               />
@@ -61,11 +61,19 @@ const TabsLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Bell
-              size={24}
-              color={focused ? "#79C72B" : "white"}
-              strokeWidth={2}
-            />
+            <View
+              style={{
+                marginTop: 30,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Bell
+                size={34}
+                color={focused ? "#79C72B" : "white"}
+                strokeWidth={2}
+              />
+            </View>
           ),
         }}
       />
@@ -75,11 +83,19 @@ const TabsLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Menu
-              size={24}
-              color={focused ? "#79C72B" : "white"}
-              strokeWidth={2}
-            />
+            <View
+              style={{
+                marginTop: 30,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Menu
+                size={34}
+                color={focused ? "#79C72B" : "white"}
+                strokeWidth={2}
+              />
+            </View>
           ),
         }}
       />
@@ -92,9 +108,10 @@ const TabsLayout = () => {
             <View
               style={{
                 backgroundColor: "#79C72B",
-                width: 46,
-                height: 46,
-                borderRadius: 23,
+                width: 66,
+                height: 66,
+                marginTop: 30,
+                borderRadius: 43,
                 justifyContent: "center",
                 alignItems: "center",
                 shadowColor: "#000",
