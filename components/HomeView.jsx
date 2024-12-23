@@ -14,7 +14,7 @@ const HomeView = () => {
       <View className="flex-row items-center gap-2">
         <View className="w-10 h-10 bg-[#044454] rounded-full">
         </View>
-        <Text className="text-xl text-white">Hola, Felix</Text>
+        <Text className="text-xl text-white">Hola, Felixxxxxxxxx</Text>
       </View>
       <View className="flex-1 mt-8 px-4 justify-between max-h-[312px] py-4 boder border-white rounded-lg">
         <View>

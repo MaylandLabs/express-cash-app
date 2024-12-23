@@ -2,7 +2,9 @@
   "expo": {
     "name": "clase-19",
     "slug": "clase-19",
+    "newArchEnabled": true,
     "version": "1.0.0",
+    "scheme": "expresscash",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
