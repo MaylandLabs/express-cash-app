@@ -1,22 +1,42 @@
 import React from "react";
-import { Text, View, Image, Pressable, Switch } from "react-native";
+import { Text, View, Image, Pressable, Switch, Animated } from "react-native";
 import { styled } from "nativewind";
 import { LinearGradient } from "expo-linear-gradient";
-import { Wallet } from 'lucide-react-native';
-import { HelpCircle } from 'lucide-react-native';
-import { Bell } from 'lucide-react-native';
-import { Settings } from 'lucide-react-native';
-import { DoorClosed } from 'lucide-react-native';
-import { ArrowRight } from 'lucide-react-native';
-import { useRouter } from 'expo-router'; // Usamos useRouter desde expo-router
+import { Wallet, HelpCircle, Bell, Settings, DoorClosed, ArrowRight } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 const StyledPressable = styled(Pressable);
 
 const Profile = () => {
-  const router = useRouter(); // Usamos useRouter para navegar en expo-router
+  const router = useRouter();
   const [isPushEnabled, setIsPushEnabled] = React.useState(false);
 
+  // Animaciones independientes para cada botón
+  const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const loansAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const supportAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const settingsAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const logoutAnimatedScale = React.useRef(new Animated.Value(1)).current;
+
   const toggleSwitch = () => setIsPushEnabled((previousState) => !previousState);
+
+  const handlePressIn = (animatedValue) => {
+    Animated.spring(animatedValue, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 4
+    }).start();
+  };
+
+  const handlePressOut = (animatedValue) => {
+    Animated.spring(animatedValue, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 4
+    }).start();
+  };
 
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={{ flex: 1 }}>
@@ -37,40 +57,90 @@ const Profile = () => {
           <Text className="text-white/80 text-sm mb-4">
             felixbilbao01@gmail.com
           </Text>
-          <StyledPressable className="bg-[#79C72B] py-2 px-8 rounded-lg">
-            <Text className="text-white text-sm font-semibold">
-              Editar perfil
-            </Text>
-          </StyledPressable>
+
+          {/* Botón "Editar perfil" con animación de hover */}
+          <Animated.View style={{
+            transform: [{ scale: editProfileAnimatedScale }]
+          }}>
+            <StyledPressable
+              className="bg-[#79C72B] py-2 px-8 rounded-lg"
+              onPressIn={() => handlePressIn(editProfileAnimatedScale)}
+              onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed ? 'rgba(121, 199, 43, 0.7)' : '#79C72B', // Cambia el color al presionar
+                  padding: 12,
+                  borderRadius: 12,
+                }
+              ]}
+            >
+              <Text className="text-white text-sm font-semibold">
+                Editar perfil
+              </Text>
+            </StyledPressable>
+          </Animated.View>
         </View>
 
         {/* Account Section */}
         <View className="mt-6">
-          <Text className="text-white/60 text-sm font-semibold mb-2">
+          <Text className="text-white/60 text-sm font-semibold mb-2 mt-[-10px]">
             Mi cuenta
           </Text>
           <View className="bg-[#006B7A] p-4 rounded-2xl mb-6">
-            <StyledPressable 
-              className="flex-row items-center justify-between mb-6"
-              onPress={() => router.push('/MyLoans')}  // Ruta relativa al archivo de LoansScreen
-            >
-              <Wallet size={24} color="white"/>
-              <Text className="text-white text-sm ml-[-150px]">Mis préstamos</Text>
-              <ArrowRight size={24} color="white" />
-            </StyledPressable>
+            <Animated.View style={{
+              transform: [{ scale: loansAnimatedScale }]
+            }}>
+              <StyledPressable
+                className="flex-row items-center justify-between mb-3"
+                onPress={() => router.push('/MyLoans')}
+                onPressIn={() => handlePressIn(loansAnimatedScale)}
+                onPressOut={() => handlePressOut(loansAnimatedScale)}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
+                    padding: 12,
+                    borderRadius: 12,
+                  }
+                ]}
+              >
+                <View className="flex-row items-center flex-1">
+                  <Wallet size={24} color="white" />
+                  <Text className="text-white text-sm ml-4 flex-1">Mis préstamos</Text>
+                  <ArrowRight size={24} color="white" />
+                </View>
+              </StyledPressable>
+            </Animated.View>
 
-            <View className="h-[1px] bg-white/30 mb-6"></View>
-            <View className="flex-row items-center justify-between">
-              <HelpCircle size={24} color="white" />
-              <Text className="text-white text-sm ml-[-190px]">Soporte</Text>
-              <ArrowRight size={24} color="white" />
-            </View>
+            <View className="h-[1px] bg-white/30 my-3"></View>
+
+            <Animated.View style={{
+              transform: [{ scale: supportAnimatedScale }]
+            }}>
+              <StyledPressable
+                className="flex-row items-center justify-between mb-3"
+                onPressIn={() => handlePressIn(supportAnimatedScale)}
+                onPressOut={() => handlePressOut(supportAnimatedScale)}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
+                    padding: 12,
+                    borderRadius: 12,
+                  }
+                ]}
+              >
+                <View className="flex-row items-center flex-1 mt-1 mb-[-10px]">
+                  <HelpCircle size={24} color="white" />
+                  <Text className="text-white text-sm ml-4 flex-1">Soporte</Text>
+                  <ArrowRight size={24} color="white" />
+                </View>
+              </StyledPressable>
+            </Animated.View>
           </View>
         </View>
 
         {/* Preferences Section */}
         <View>
-          <Text className="text-white/60 text-sm font-semibold mb-2">
+          <Text className="text-white/60 text-sm font-semibold mb-2 mt-[-10px]">
             Preferencias
           </Text>
           <View className="bg-[#006B7A] p-4 rounded-2xl">
@@ -85,16 +155,52 @@ const Profile = () => {
               />
             </View>
             <View className="h-[1px] bg-white/30 mb-4"></View>
-            <View className="flex-row items-center justify-between mb-3">
-              <Settings size={24} color="white" />
-              <Text className="text-white text-sm ml-[-130px]">Configuración</Text>
-              <ArrowRight size={24} color="white" />
-            </View>
-            <View className="h-[1px] bg-white/30 mt-2"></View>
-            <Text className="text-white text-sm ml-[55px] top-[20px]">
-              Cerrar sesión
-            </Text>
-            <DoorClosed size={24} color="salmon" style={{marginTop: "20px"}}/>
+            
+            <Animated.View style={{
+              transform: [{ scale: settingsAnimatedScale }]
+            }}>
+              <StyledPressable
+                className="flex-row items-center justify-between mb-3"
+                onPressIn={() => handlePressIn(settingsAnimatedScale)}
+                onPressOut={() => handlePressOut(settingsAnimatedScale)}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
+                    padding: 12,
+                    borderRadius: 12,
+                  }
+                ]}
+              >
+                <View className="flex-row items-center flex-1">
+                  <Settings size={24} color="white" />
+                  <Text className="text-white text-sm ml-4 flex-1">Configuración</Text>
+                  <ArrowRight size={24} color="white" />
+                </View>
+              </StyledPressable>
+            </Animated.View>
+
+            <View className="h-[1px] bg-white/30 mt-2 mb-4"></View>
+                       <Animated.View style={{
+              transform: [{ scale: logoutAnimatedScale }]}
+            }>
+              <StyledPressable
+                className="flex-row items-center justify-between"
+                onPressIn={() => handlePressIn(logoutAnimatedScale)}
+                onPressOut={() => handlePressOut(logoutAnimatedScale)}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
+                    padding: 12,
+                    borderRadius: 12,
+                  }
+                ]}
+              >
+                <View className="flex-row items-center flex-1">
+                  <DoorClosed size={24} color="salmon" />
+                  <Text className="text-white text-sm ml-4 flex-1 mb-2 top-1">Cerrar sesión</Text>
+                </View>
+              </StyledPressable>
+              </Animated.View>
           </View>
         </View>
       </View>

@@ -21,14 +21,14 @@ const LoansScreen = () => {
           <Text className="text-white/60 text-sm mb-4">19 junio 2023</Text>
           
           <Text className="text-white/80 text-sm mb-2">Cuotas pagadas</Text>
-          <View className="flex-row space-x-1 mb-1">
-            {[...Array(19)].map((_, i) => (
-              <View 
-                key={i} 
-                className={`flex-1 h-2 rounded ${i < 9 ? 'bg-green-500' : 'bg-white/30'}`}
-              />
-            ))}
-          </View>
+          <View className="flex-row gap-1">
+                {[...Array(10)].map((_, i) => (
+                  <View 
+                    key={i}
+                    className={`flex-1 h-1.5 rounded-full ${i < 8 ? 'bg-[#79C72B]' : 'bg-white/20'}`}
+                  />
+                ))}
+              </View>
           <Text className="text-white/60 text-sm">9/19</Text>
         </View>
       </View>
