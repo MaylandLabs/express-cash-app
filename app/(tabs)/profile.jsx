@@ -52,7 +52,7 @@ const Profile = () => {
           <View className="bg-[#006B7A] p-4 rounded-2xl mb-6">
             <StyledPressable 
               className="flex-row items-center justify-between mb-6"
-              onPress={() => router.push('../components/LoansScreen')}  // Ruta relativa al archivo de LoansScreen
+              onPress={() => router.push('/MyLoans')}  // Ruta relativa al archivo de LoansScreen
             >
               <Wallet size={24} color="white"/>
               <Text className="text-white text-sm ml-[-150px]">Mis préstamos</Text>
