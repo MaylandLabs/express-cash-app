@@ -102,8 +102,7 @@ const Loan = ({ navigation }) => {
           ]}
           onPress={() => {
             if (isApproved) {
-              // Redirige a otra página o realiza otra acción
-              router.push("/"); // Cambia "/asesor" por la ruta correspondiente
+              router.push("/"); // Cambia "/asesor" por la ruta correspondiente que lleve a la pagina del asesor o algo asi
             } else {
               handleBack(); // Vuelve hacia atrás
             }

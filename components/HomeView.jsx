@@ -9,17 +9,41 @@ import {
   ScrollView,
   Pressable,   
   SafeAreaView,
+  Animated
 } from "react-native";
 import { Link } from "expo-router";
 import { Stack } from "expo-router";
 import { styled } from "nativewind";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 
 const StyledPressable = styled(Pressable);
 
 const HomeView = () => {
   const router = useRouter();
+  const [scale] = useState(new Animated.Value(1));
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.95,  // Reduce el tamaño al 95% al presionar
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 4,  // Efecto de rebote
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,  // Vuelve al tamaño original
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 4,
+    }).start();
+  };
+
+
+
   return (
 <LinearGradient
   colors={['#006B7A', '#004C5E']}
@@ -29,15 +53,25 @@ const HomeView = () => {
     <Stack.Screen options={{ headerShown: false }} />
     
     {/* Header */}
-    <View className="flex-row items-center gap-3 mb-5">
-      <Image 
-        source={require('../assets/icon.png')} 
-        className="w-8 h-8 rounded-full"
-      />
-      <Text className="text-lg font-medium text-white">Hola, Félix</Text>
-      <Text className="text-white ml-auto">{'>'}</Text>
-    </View>
-
+    <Pressable
+      onPress={() => router.push('/(tabs)/profile')}
+      onPressIn={handlePressIn}  // Inicia la animación de escala
+      onPressOut={handlePressOut}  // Termina la animación de escala
+    >
+      <Animated.View
+        style={{
+          transform: [{ scale }],  // Aplica la animación de escala
+        }}
+        className="flex-row items-center gap-3 mb-5"
+      >
+        <Image
+          source={require('../assets/userr.png')}
+          className="w-8 h-8 rounded-full"
+        />
+        <Text className="text-lg font-medium text-white">Hola, Félix</Text>
+        <Text className="text-white ml-auto">{'>'}</Text>
+      </Animated.View>
+    </Pressable>
     {/* Loan Section */}
     <View className="mt-6 flex-1">
       <View className="bg-[#006B7A] p-4 rounded-2xl h-[340px]">

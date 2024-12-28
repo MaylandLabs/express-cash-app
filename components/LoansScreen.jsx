@@ -1,11 +1,18 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const LoansScreen = () => {
+   const router = useRouter();
+
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={{ flex: 1 }}>
       <View className="flex-1 p-6">
+      <Pressable onPress={() => router.push("/(tabs)/")} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </Pressable>
         <Text className="text-white text-xl font-semibold mb-6">Mis préstamos</Text>
         
         {/* Loan Card */}
@@ -35,5 +42,12 @@ const LoansScreen = () => {
     </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  backButton: {
+    marginRight: 15,
+  },
+}
+)
 
 export default LoansScreen;
