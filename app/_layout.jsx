@@ -1,12 +1,29 @@
-import { View, Text } from "react-native";
-import { Stack } from "expo-router";
+// app/_layout.jsx
+import { Stack } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { redirect } from 'expo-router';
+import { checkAuth } from '../utils/auth';  // Asegúrate que la ruta sea correcta
 
-const Layout = () => {
-  return (
-    <View className="flex-1">
-      <Stack />
-    </View>
-  );
-};
+export default function RootLayout() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-export default Layout;
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      try {
+        const status = await checkAuth();
+        setIsAuthenticated(status);
+        if (!status) {
+          redirect('/(auth)');
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setIsAuthenticated(false);
+        redirect('/(auth)');
+      }
+    };
+
+    checkUserAuth();
+  }, []);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
+}

@@ -1,11 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const optionsMonto = [
-  "$ 25.000", "$ 50.000", "$ 75.000", "$ 100.000",
-  "$ 150.000", "$ 200.000", "$ 250.000", "$ 300.000",
+  "$ 25.000",
+  "$ 50.000",
+  "$ 75.000",
+  "$ 100.000",
+  "$ 150.000",
+  "$ 200.000",
+  "$ 250.000",
+  "$ 300.000",
 ];
 
 const optionsCuotas = ["10 cuotas", "14 cuotas", "19 cuotas", "24 cuotas"];
@@ -16,7 +30,8 @@ const Loan = ({ navigation }) => {
   const [isMontoDropdownVisible, setMontoDropdownVisible] = useState(false);
   const [isCuotasDropdownVisible, setCuotasDropdownVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loanStatus, setLoanStatus] = useState(null); // 'approved' or 'rejected' or null
+  const [loanStatus, setLoanStatus] = useState(null);
+  const router = useRouter();
 
   const handleMontoSelect = (value) => {
     setSelectedMonto(value);
@@ -30,10 +45,8 @@ const Loan = ({ navigation }) => {
 
   const handleContinue = () => {
     setIsLoading(true);
-    // Simulate API call
     setTimeout(() => {
-      // Random approval/rejection for demo purposes
-      setLoanStatus(Math.random() > 0.5 ? 'approved' : 'rejected');
+      setLoanStatus(Math.random() > 0.5 ? "approved" : "rejected");
       setIsLoading(false);
     }, 2000);
   };
@@ -41,47 +54,66 @@ const Loan = ({ navigation }) => {
   const handleBack = () => {
     if (loanStatus) {
       setLoanStatus(null);
+    } else if (navigation) {
+      navigation.goBack(); // Usa navegación clásica
     } else {
-      navigation?.goBack();
+      router.push("/"); // Vuelve al home si no hay navegación clásica
     }
   };
+  
 
   const renderStatusScreen = () => {
-    const isApproved = loanStatus === 'approved';
-    
+    const isApproved = loanStatus === "approved";
+
     return (
-      <LinearGradient 
-        colors={isApproved ? ["#388E3C", "#388E3C"] : ["#D32F2F", "#B71C1C"]} 
+      <LinearGradient
+        colors={isApproved ? ["#388E3C", "#388E3C"] : ["#D32F2F", "#B71C1C"]}
         style={styles.statusContainer}
       >
         <View style={styles.statusIconContainer}>
-          <View style={[styles.statusIcon, isApproved ? styles.approvedIcon : styles.rejectedIcon]}>
-            <Ionicons 
-              name={isApproved ? "checkmark" : "close"} 
-              size={40} 
-              color="white" 
+          <View
+            style={[
+              styles.statusIcon,
+              isApproved ? styles.approvedIcon : styles.rejectedIcon,
+            ]}
+          >
+            <Ionicons
+              name={isApproved ? "checkmark" : "close"}
+              size={40}
+              color="white"
             />
           </View>
         </View>
-        
+
         <Text style={styles.statusTitle}>
           {isApproved ? "Préstamo pre-aprobado" : "Préstamo rechazado"}
         </Text>
-        
+
         <Text style={styles.statusMessage}>
-          {isApproved 
+          {isApproved
             ? "Tu préstamo ha sido pre-aprobado.\nPuedes continuar con el asesor."
             : "Tu préstamo ha sido rechazado.\nTu perfil no es compatible."}
         </Text>
 
-        <Pressable 
-          style={[styles.button, { backgroundColor: isApproved ? '#388E3C' : '#B71C1C' }]}
-          onPress={() => isApproved ? console.log("Continuar con asesor") : handleBack()}
+        <Pressable
+          style={[
+            styles.button,
+            { backgroundColor: isApproved ? "#388E3C" : "#B71C1C" },
+          ]}
+          onPress={() => {
+            if (isApproved) {
+              // Redirige a otra página o realiza otra acción
+              router.push("/"); // Cambia "/asesor" por la ruta correspondiente
+            } else {
+              handleBack(); // Vuelve hacia atrás
+            }
+          }}
         >
           <Text style={styles.buttonText}>
             {isApproved ? "Continuar con el asesor" : "Volver al home"}
           </Text>
         </Pressable>
+
       </LinearGradient>
     );
   };
@@ -92,65 +124,100 @@ const Loan = ({ navigation }) => {
 
   if (isLoading) {
     return (
-      <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.loadingContainer}>
+      <LinearGradient
+        colors={["#006B7A", "#004C5E"]}
+        style={styles.loadingContainer}
+      >
         <ActivityIndicator size="large" color="#8BC34A" />
-        <Text style={styles.loadingText}>Estamos confirmando el estado de su préstamo</Text>
+        <Text style={styles.loadingText}>
+          Estamos confirmando el estado de su préstamo
+        </Text>
       </LinearGradient>
     );
   }
-
-  const renderOption = (item, onSelect, isSelected) => (
-    <Pressable
-      style={[styles.option, isSelected && styles.selectedOption]}
-      onPress={() => onSelect(item)}
-    >
-      <Text style={[styles.optionText, isSelected && styles.selectedOptionText]}>
-        {item}
-      </Text>
-      {isSelected && <View style={styles.checkmark} />}
-    </Pressable>
-  );
 
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Pressable onPress={handleBack} style={styles.backButton}>
+          <Pressable onPress={() => router.push("/")} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </Pressable>
           <Text style={styles.headerText}>Solicitar préstamo</Text>
         </View>
 
+        {/* Dropdown for Monto */}
         <Text style={styles.label}>Monto</Text>
         <Pressable
           style={styles.selector}
           onPress={() => setMontoDropdownVisible(!isMontoDropdownVisible)}
         >
           <Text style={styles.selectorText}>{selectedMonto}</Text>
+          <Ionicons
+            name={isMontoDropdownVisible ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="white"
+          />
         </Pressable>
         {isMontoDropdownVisible && (
-          <FlatList
-            data={optionsMonto}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => renderOption(item, handleMontoSelect, item === selectedMonto)}
-            style={styles.dropdown}
-          />
+          <View style={styles.dropdown}>
+            {optionsMonto.map((monto) => (
+              <Pressable
+                key={monto}
+                style={[
+                  styles.option,
+                  selectedMonto === monto && styles.selectedOption,
+                ]}
+                onPress={() => handleMontoSelect(monto)}
+              >
+                <Text
+                  style={[
+                    styles.optionText,
+                    selectedMonto === monto && styles.selectedOptionText,
+                  ]}
+                >
+                  {monto}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         )}
 
-        <Text style={styles.label}>Cuotas</Text>
+        {/* Dropdown for Cuotas */}
+        <Text style={styles.labelC}>Cuotas</Text>
         <Pressable
           style={styles.selector}
           onPress={() => setCuotasDropdownVisible(!isCuotasDropdownVisible)}
         >
           <Text style={styles.selectorText}>{selectedCuotas}</Text>
+          <Ionicons
+            name={isCuotasDropdownVisible ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="white"
+          />
         </Pressable>
         {isCuotasDropdownVisible && (
-          <FlatList
-            data={optionsCuotas}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => renderOption(item, handleCuotasSelect, item === selectedCuotas)}
-            style={styles.dropdown}
-          />
+          <View style={styles.dropdown}>
+            {optionsCuotas.map((cuota) => (
+              <Pressable
+                key={cuota}
+                style={[
+                  styles.option,
+                  selectedCuotas === cuota && styles.selectedOption,
+                ]}
+                onPress={() => handleCuotasSelect(cuota)}
+              >
+                <Text
+                  style={[
+                    styles.optionText,
+                    selectedCuotas === cuota && styles.selectedOptionText,
+                  ]}
+                >
+                  {cuota}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         )}
 
         <Pressable style={styles.button} onPress={handleContinue}>
@@ -161,8 +228,8 @@ const Loan = ({ navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
-  // ... existing styles remain the same ...
   container: {
     flex: 1,
   },
@@ -170,19 +237,86 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    marginBottom: 30,
   },
-  loadingText: {
-    color: 'white',
+  backButton: {
+    marginRight: 15,
+  },
+  headerText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  label: {
+    color: "#8BC34A",
     fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 20
   },
-  // Add new styles for status screens
+  labelC: {
+    color: "#8BC34A",
+    fontSize: 16,
+    marginBottom: 10,
+    marginTop:40
+  },
+  selector: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    padding: 15,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#8BC34A',
+  },
+  selectorText: {
+    color: "white",
+    fontSize: 16,
+  },
+  dropdown: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: 8,
+    borderColor: "#8BC34A",
+    borderWidth: 1,
+    marginTop: 5,
+    overflow: "hidden",
+    maxHeight: 200, // Altura máxima del dropdown
+  },
+  scrollView: {
+    paddingVertical: 5,
+  },
+  option: {
+    padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedOption: {
+    backgroundColor: '#8BC34A33',
+  },
+  optionText: {
+    color: "white",
+    fontSize: 16,
+  },
+  selectedOptionText: {
+    fontWeight: 'bold',
+  },
+  button: {
+    backgroundColor: "#8BC34A",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 80,
+    position: "fix"
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   statusContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -219,81 +353,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     lineHeight: 24,
   },
-  // ... rest of existing styles ...
-  header: {
-    flexDirection: 'row',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
-  },
-  backButton: {
-    marginRight: 15,
-  },
-  headerText: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  label: {
-    color: "#8BC34A",
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  selector: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#8BC34A',
-  },
-  selectorText: {
-    color: "white",
-    fontSize: 16,
-  },
-  dropdown: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    marginBottom: 20,
-    borderRadius: 8,
-    maxHeight: 200,
-  },
-  option: {
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  selectedOption: {
-    backgroundColor: '#8BC34A',
-  },
-  optionText: {
-    color: "white",
-    fontSize: 16,
-  },
-  selectedOptionText: {
-    fontWeight: 'bold',
-  },
-  button: {
-    backgroundColor: "#8BC34A",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 50,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  checkmark: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    marginLeft: 10,
+    padding: 20,
   },
 });
 

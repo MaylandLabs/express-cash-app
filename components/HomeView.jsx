@@ -14,53 +14,64 @@ import { Link } from "expo-router";
 import { Stack } from "expo-router";
 import { styled } from "nativewind";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 const StyledPressable = styled(Pressable);
 
 const HomeView = () => {
+  const router = useRouter();
   return (
-    <LinearGradient
-      colors={['#006B7A', '#004C5E']}
-      style={{ flex: 1 }}
-    >
-      <View className="flex-1 pt-4 px-6">
-        <Stack.Screen options={{ headerShown: false }} />
-        
-        {/* Header */}
-        <View className="flex-row items-center gap-3">
-          <Image 
-            source={require('../assets/icon.png')} 
-            className="w-8 h-8 rounded-full"
-          />
-          <Text className="text-lg font-medium text-white">Hola, Félix</Text>
-          <Text className="text-white ml-auto">{'>'}</Text>
-        </View>
+<LinearGradient
+  colors={['#006B7A', '#004C5E']}
+  style={{ flex: 1 }}
+>
+  <View className="flex-1 pt-4 px-6">
+    <Stack.Screen options={{ headerShown: false }} />
+    
+    {/* Header */}
+    <View className="flex-row items-center gap-3">
+      <Image 
+        source={require('../assets/icon.png')} 
+        className="w-8 h-8 rounded-full"
+      />
+      <Text className="text-lg font-medium text-white">Hola, Félix</Text>
+      <Text className="text-white ml-auto">{'>'}</Text>
+    </View>
 
-        {/* Loan Section */}
-        <View className="mt-6 ">
-        <View className="bg-[#006B7A] p-4 rounded-2xl">
-          <Text className="text-sm text-white/80">Pedí tu préstamo de hasta</Text>
-          <View className="mt-4 items-center">
-            <Text className="text-5xl font-semibold text-white">$300.000</Text>
-            <Image 
-              source={require('../assets/image 24.png')} 
-              className="w-40 h-32 mt-4"
-              resizeMode="contain"
-            />
-          
-        </View>
-        {/* Button */}
-        <StyledPressable
-          className="p-4 rounded-lg active:opacity-80 bg-[#79C72B] mt-6"
-          >
-          <Text className="text-center font-medium text-white">
-            Pedir un préstamo
-          </Text>
-        </StyledPressable>
-          </View>
-        </View>
+    {/* Loan Section */}
+    <View className="mt-6 flex-1">
+      <View className="bg-[#006B7A] p-4 rounded-2xl h-[340px]">
+        <Text className="text-sm text-white/80">Pedí tu préstamo de hasta</Text>
+        <Text className="text-5xl font-semibold text-white mt-4">$300.000</Text>
+        
+        {/* Button moved above the image */}
+        <View className="flex-1">
+  {/* Image positioned at bottom left */}
+  <View className="flex-1 ml-[-35px]">
+    <Image 
+      source={require('../assets/image 24.png')} 
+      className="w-60 h-42"
+      resizeMode="contain"
+      style={{ alignSelf: 'flex-start' }}
+    />
+  </View>
+
+  {/* Button positioned above the image */}
+  <View className="absolute bottom-5 left-8 right-4">
+    <StyledPressable
+      className="p-4 rounded-lg active:opacity-80 bg-[#79C72B] w-[260px]"
+      onPress={() => router.push('/loan')}
+    >
+      <Text className="text-center font-bold text-[#006B7A]">
+        Pedir un préstamo
+      </Text>
+    </StyledPressable>
+  </View>
+  </View>
+  </View>
+      </View>
         {/* Current Loan Status */}
-        <View className="mt-8">
+        <View className="mt-6 mb-40">
           <Text className="text-lg text-white mb-2">Mis préstamos</Text>
           <View className="bg-[#006B7A] p-4 rounded-2xl">
             <View className="flex-row justify-between items-center">

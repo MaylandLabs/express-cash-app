@@ -1,48 +1,62 @@
+// App.js
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { checkAuth } from '../express-cash-app/utils/auth';
 
-import HomeView from './components/HomeView';
-import Loan from './app/(tabs)/loan';
-import TabsLayout from './app/(tabs)/_layout';  // Este componente maneja las tabs
-import LoansScreen from './components/LoansScreen'; // Asegúrate de que este componente esté importado correctamente
+// Importamos las pantallas
+import Login from './app/(auth)/login';
+import Signup from './app/(auth)/signup';
+import TabsLayout from './app/(tabs)/_layout';
 
-const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeView} />
-      <Tab.Screen name="Notifications" component={Loan} />
-      <Tab.Screen name="Profile" component={TabsLayout} />
-      <Tab.Screen name="Loan" component={Loan} />
-    </Tab.Navigator>
-  );
-};
-
 export default function App() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
+  React.useEffect(() => {
+    checkInitialAuth();
+  }, []);
+
+  const checkInitialAuth = async () => {
+    try {
+      const authStatus = await checkAuth();
+      setIsAuthenticated(authStatus);
+    } catch (error) {
+      console.error('Error checking initial auth:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-  <Stack.Screen name="Tabs" component={TabNavigator} />
-  <Stack.Screen name="Loans" component={LoansScreen} />
-</Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!isAuthenticated ? (
+            // Auth Stack
+            <>
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Signup" component={Signup} />
+            </>
+          ) : (
+            // App Stack
+            <Stack.Screen name="Tabs" component={TabsLayout} />
+          )}
+        </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    backgroundColor: "#f7f7f7",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

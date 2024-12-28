@@ -146,7 +146,7 @@ const Profile = () => {
           <View className="bg-[#006B7A] p-4 rounded-2xl">
             <View className="flex-row items-center justify-between mb-2">
               <Bell size={24} color="white" />
-              <Text className="text-white text-sm ml-[-70px]">Notificaciones push</Text>
+              <Text className="text-white text-sm ml-[-100px]">Notificaciones push</Text>
               <Switch
                 value={isPushEnabled}
                 onValueChange={toggleSwitch}
