@@ -185,6 +185,7 @@ const Profile = () => {
             }>
               <StyledPressable
                 className="flex-row items-center justify-between"
+                onPress={() => router.push('/(auth)/')}
                 onPressIn={() => handlePressIn(logoutAnimatedScale)}
                 onPressOut={() => handlePressOut(logoutAnimatedScale)}
                 style={({ pressed }) => [

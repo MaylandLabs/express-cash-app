@@ -25,11 +25,11 @@ const HomeView = () => {
   colors={['#006B7A', '#004C5E']}
   style={{ flex: 1 }}
 >
-  <View className="flex-1 pt-4 px-6">
+  <View className="flex-1 pt-4 px-6 mt-8">
     <Stack.Screen options={{ headerShown: false }} />
     
     {/* Header */}
-    <View className="flex-row items-center gap-3">
+    <View className="flex-row items-center gap-3 mb-5">
       <Image 
         source={require('../assets/icon.png')} 
         className="w-8 h-8 rounded-full"
