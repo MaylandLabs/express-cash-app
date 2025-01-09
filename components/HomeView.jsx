@@ -3,12 +3,7 @@ import {
   Text,
   View,
   Image,
-  Button,
-  FlatList,
-  TextInput,
-  ScrollView,
-  Pressable,   
-  SafeAreaView,
+  Pressable,
   Animated
 } from "react-native";
 import { Link } from "expo-router";
@@ -26,106 +21,105 @@ const HomeView = () => {
 
   const handlePressIn = () => {
     Animated.spring(scale, {
-      toValue: 0.95,  // Reduce el tamaño al 95% al presionar
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,  // Efecto de rebote
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,  // Vuelve al tamaño original
+      toValue: 0.95,
       useNativeDriver: true,
       speed: 20,
       bounciness: 4,
     }).start();
   };
 
-
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 4,
+    }).start();
+  };
 
   return (
-<LinearGradient
-  colors={['#006B7A', '#004C5E']}
-  style={{ flex: 1 }}
->
-  <View className="flex-1 pt-4 px-6 mt-8">
-    <Stack.Screen options={{ headerShown: false }} />
-    
-    {/* Header */}
-    <Pressable
-      onPress={() => router.push('/(tabs)/profile')}
-      onPressIn={handlePressIn}  // Inicia la animación de escala
-      onPressOut={handlePressOut}  // Termina la animación de escala
+    <LinearGradient
+      colors={['#006B7A', '#004C5E']}
+      style={styles.container}
     >
-      <Animated.View
-        style={{
-          transform: [{ scale }],  // Aplica la animación de escala
-        }}
-        className="flex-row items-center gap-3 mb-5"
-      >
-        <Image
-          source={require('../assets/userr.png')}
-          className="w-8 h-8 rounded-full"
-        />
-        <Text className="text-lg font-medium text-white">Hola, Félix</Text>
-        <Text className="text-white ml-auto">{'>'}</Text>
-      </Animated.View>
-    </Pressable>
-    {/* Loan Section */}
-    <View className="mt-6 flex-1">
-      <View className="bg-[#006B7A] p-4 rounded-2xl h-[340px]">
-        <Text className="text-sm text-white/80">Pedí tu préstamo de hasta</Text>
-        <Text className="text-5xl font-semibold text-white mt-4">$300.000</Text>
+      <View style={styles.content}>
+        <Stack.Screen options={{ headerShown: false }} />
         
-        {/* Button moved above the image */}
-        <View className="flex-1">
-  {/* Image positioned at bottom left */}
-  <View className="flex-1 ml-[-35px]">
-    <Image 
-      source={require('../assets/image 24.png')} 
-      className="w-60 h-42"
-      resizeMode="contain"
-      style={{ alignSelf: 'flex-start' }}
-    />
-  </View>
-
-  {/* Button positioned above the image */}
-  <View className="absolute bottom-5 left-8 right-4">
-    <StyledPressable
-      className="p-4 rounded-lg active:opacity-80 bg-[#79C72B] w-[260px]"
-      onPress={() => router.push('/loan')}
-    >
-      <Text className="text-center font-bold text-[#006B7A]">
-        Pedir un préstamo
-      </Text>
-    </StyledPressable>
-  </View>
-  </View>
-  </View>
-      </View>
-        {/* Current Loan Status */}
-        <View className="mt-6 mb-40">
-          <Text className="text-lg text-white mb-2">Mis préstamos</Text>
-          <View className="bg-[#006B7A] p-4 rounded-2xl">
-            <View className="flex-row justify-between items-center">
-              <Text className="text-2xl font-semibold text-white">$75.000</Text>
-              <Text className="ml-[190px]">😊</Text>
-              <Text className="text-white/70"> Al día</Text>
-            </View>
-            <Text className="text-white/60 text-sm mt-1">14 junio 2023</Text>
+        {/* Header */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/profile')}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        >
+          <Animated.View
+            style={[
+              {
+                transform: [{ scale }],
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 20
+              }
+            ]}
+          >
+            <Image
+              source={require('../assets/userr.png')}
+              style={styles.userAvatar}
+            />
+            <Text style={styles.greeting}>Hola, Félix</Text>
+            <Text style={styles.arrow}>{'>'}</Text>
+          </Animated.View>
+        </Pressable>
+        {/* Loan Section */}
+        <View style={styles.loanSection}>
+          <View style={styles.loanCard}>
+            <Text style={styles.loanTitle}>Pedí tu préstamo de hasta</Text>
+            <Text style={styles.loanAmount}>$300.000</Text>
             
-            <View className="mt-4">
-              <Text className="text-white/70 text-sm mb-2">Cuotas pagadas</Text>
-              <View className="flex-row gap-1">
+            <View style={styles.imageContainer}>
+              <Image 
+                source={require('../assets/image 24.png')} 
+                style={styles.loanImage}
+              />
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <StyledPressable
+                style={styles.loanButton}
+                onPress={() => router.push('/loan')}
+              >
+                <Text style={styles.buttonText}>
+                  Pedir un préstamo
+                </Text>
+              </StyledPressable>
+            </View>
+          </View>
+        </View>
+        {/* Current Loan Status */}
+        <View style={styles.statusSection}>
+          <Text style={styles.statusTitle}>Mis préstamos</Text>
+          <View style={styles.statusCard}>
+            <View style={styles.statusInfoContainer}>
+              <Text style={styles.amount}>$75.000</Text>
+              <Text style={styles.smile}>😊</Text>
+              <Text style={styles.status}> Al día</Text>
+            </View>
+            <Text style={styles.date}>14 junio 2023</Text>
+            
+            <View style={styles.paymentStatusContainer}>
+              <Text style={styles.paymentStatusTitle}>Cuotas pagadas</Text>
+              <View style={styles.paymentProgress}>
                 {[...Array(10)].map((_, i) => (
                   <View 
                     key={i}
-                    className={`flex-1 h-1.5 rounded-full ${i < 8 ? 'bg-[#79C72B]' : 'bg-white/20'}`}
+                    style={[
+                      styles.progressBarItem,
+                      i < 8 ? styles.progressBarItemActive : {}
+                    ]}
                   />
                 ))}
               </View>
-              <Text className="text-white/60 text-sm mt-1">8/10</Text>
+              <Text style={styles.progressText}>8/10</Text>
             </View>
           </View>
         </View>
@@ -134,5 +128,150 @@ const HomeView = () => {
   );
 };
 
-export default HomeView;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 16,
+    paddingHorizontal: 24,
+    marginTop: 32,
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  greeting: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: 'white',
+    fontFamily: 'poppins'
+  },
+  arrow: {
+    color: 'white',
+    marginLeft: 'auto',
+    fontFamily: 'poppins'
+  },
+  loanSection: {
+    marginTop: 24,
+    flex: 1,
+  },
+  loanCard: {
+    backgroundColor: '#006B7A',
+    padding: 16,
+    borderRadius: 16,
+    height: 340,
+  },
+  loanTitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontFamily: 'poppins'
+  },
+  loanAmount: {
+    fontSize: 48,
+    fontWeight: '600',
+    color: 'white',
+    marginTop: 16,
+    fontFamily: 'poppins'
+  },
+  imageContainer: {
+    flex: 1,
+    marginLeft: -35,
+  },
+  loanImage: {
+    width: 240,
+    height: 168,
+    resizeMode: 'contain',
+    alignSelf: 'flex-start'
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 32,
+    right: 16,
+  },
+  loanButton: {
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: '#79C72B',
+    width: 260,
+  },
+  buttonText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#006B7A',
+    fontFamily: 'poppins'
+  },
+  statusSection: {
+    marginTop: 24,
+    marginBottom: 160,
+  },
+  statusTitle: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 8,
+    fontFamily: 'poppins'
+  },
+  statusCard: {
+    backgroundColor: '#006B7A',
+    padding: 16,
+    borderRadius: 16,
+  },
+  statusInfoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  amount: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: 'white',
+    fontFamily: 'poppins'
+  },
+  smile: {
+    marginLeft: 380,
+    fontFamily: 'poppins'
+  },
+  status: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'poppins'
+  },
+  date: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 4,
+    fontFamily: 'poppins'
+  },
+  paymentStatusContainer: {
+    marginTop: 16,
+  },
+  paymentStatusTitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginBottom: 8,
+    fontFamily: 'poppins'
+  },
+  paymentProgress: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  progressBarItem: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  progressBarItemActive: {
+    backgroundColor: '#79C72B',
+  },
+  progressText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 4,
+    fontFamily: 'poppins'
+  },
+});
 
+export default HomeView;
