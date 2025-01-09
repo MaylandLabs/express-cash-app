@@ -7,7 +7,7 @@
     "scheme": "expresscash",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/logo.png",  
       "resizeMode": "center", 

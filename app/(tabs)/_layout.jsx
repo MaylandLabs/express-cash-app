@@ -104,7 +104,7 @@ const TabsLayout = () => {
         name="loan"
         options={{
           headerShown: false,
-          tabBarStyle: { display: "none" }, // Oculta la barra inferior en esta pantalla
+          tabBarStyle: { display: "none" },
           tabBarIcon: ({ focused }) => (
             <View
               style={{

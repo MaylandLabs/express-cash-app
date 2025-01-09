@@ -23,7 +23,7 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/logo.png')}  // Aquí puedes usar el mismo logo que en el splash
+        source={require('../../assets/logo.png')} 
         style={styles.logo}
         resizeMode="contain"
       />
