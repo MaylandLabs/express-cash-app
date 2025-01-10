@@ -3,22 +3,22 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from '../../utils/auth';
-import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
-import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
+import { useFonts } from 'expo-font';
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Cargar la fuente
+  
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
 
   if (!fontsLoaded) {
-    return null;  // Asegura que las fuentes se carguen antes de renderizar
+    return null;
   }
 
   const handleLogin = async () => {

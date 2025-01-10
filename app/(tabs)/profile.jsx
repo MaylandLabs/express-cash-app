@@ -14,14 +14,14 @@ const Profile = () => {
   const router = useRouter();
   const [isPushEnabled, setIsPushEnabled] = React.useState(false);
 
-  // Definir las animaciones para cada botón
+
   const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const loansAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const supportAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const settingsAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const logoutAnimatedScale = React.useRef(new Animated.Value(1)).current;
 
-  // Cargar las fuentes
+
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
@@ -47,7 +47,7 @@ const Profile = () => {
     }).start();
   };
 
-  // Esperar que las fuentes se carguen antes de mostrar la interfaz
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -61,10 +61,7 @@ const Profile = () => {
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
       <View style={styles.content}>
-        {/* Header */}
-        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>
-
-        {/* Profile Section */}
+        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>  
         <View style={styles.profileSection}>
           <View style={styles.profileImageWrapper}>
             <Image
@@ -76,7 +73,7 @@ const Profile = () => {
           <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>Félix Bilbao</Text>
           <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>felixbilbao01@gmail.com</Text>
 
-          {/* Botón "Editar perfil" con animación de hover */}
+          
           <Animated.View style={{ transform: [{ scale: editProfileAnimatedScale }] }}>
             <StyledPressable
               style={styles.editProfileButton}
@@ -88,7 +85,7 @@ const Profile = () => {
           </Animated.View>
         </View>
 
-        {/* Account Section */}
+        
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontFamily: 'Poppins_600SemiBold' }]}>Mi cuenta</Text>
           <View style={styles.card}>
@@ -125,20 +122,24 @@ const Profile = () => {
           </View>
         </View>
 
-        {/* Preferences Section */}
+      
         <View>
           <Text style={[styles.sectionTitle, { fontFamily: 'Poppins_600SemiBold' }]}>Preferencias</Text>
           <View style={styles.card}>
-            <View style={styles.cardItem}>
+          <View style={styles.cardItem}>
+            <View style={styles.cardItemContent}>
               <Bell size={24} color="white" />
-              <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Notificaciones push</Text>
-              <Switch
-                value={isPushEnabled}
-                onValueChange={toggleSwitch}
-                trackColor={{ false: "#767577", true: "#79C72B" }}
-                thumbColor={isPushEnabled ? "#ffffff" : "#f4f3f4"}
-              />
+              <Text style={styles.cardItemText}>Notificaciones push</Text>
+              <View style={styles.switchContainer}>
+                <Switch
+                  value={isPushEnabled}
+                  onValueChange={toggleSwitch}
+                  trackColor={{ false: "#767577", true: "#79C72B" }}
+                  thumbColor={isPushEnabled ? "#ffffff" : "#f4f3f4"}
+                />
+              </View>
             </View>
+          </View>
             <View style={styles.divider}></View>
 
             <Animated.View style={{ transform: [{ scale: settingsAnimatedScale }] }}>
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins', 
   },
   section: {
-    marginTop: 24,
+    marginTop: 15,
   },
   sectionTitle: {
     color: 'white',
@@ -249,34 +250,49 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#006B7A',
-    padding: 16,
+    padding: 12,
     borderRadius: 16,
     marginBottom: 24,
   },
   cardItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
+    height: 48,
     borderRadius: 12,
   },
   cardItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
   },
   cardItemText: {
     color: 'white',
     fontSize: 14,
-    marginLeft: 16,
-    fontFamily: 'Poppins', 
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 12,
+    fontFamily: 'Poppins',
+  },
+  cardItemIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
   },
   divider: {
     height: 1,
     backgroundColor: 'white',
     opacity: 0.3,
-    marginVertical: 12,
+    marginVertical: 5,
   },
+  switchContainer: {
+    minWidth: 51,
+    alignItems: 'center',
+    justifyContent: 'center', 
+    height: '100%', 
+    left: 15
+  }
 });
 
 export default Profile;

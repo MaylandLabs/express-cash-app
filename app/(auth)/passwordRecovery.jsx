@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from "expo-linear-gradient";
-import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
-import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
+import { useFonts } from 'expo-font'; 
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 
 export default function PasswordRecovery() {
   const [email, setEmail] = useState('');
@@ -23,14 +23,14 @@ export default function PasswordRecovery() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  // Cargar la fuente
+
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
 
   if (!fontsLoaded) {
-    return null;  // Asegura que se carguen las fuentes antes de renderizar
+    return null;  
   }
 
   const isValidEmail = (email) => {
@@ -39,7 +39,7 @@ export default function PasswordRecovery() {
   };
 
   const isValidPassword = (password) => {
-    return password.length >= 6; // Puedes ajustar la validación según tus requisitos
+    return password.length >= 6; 
   };
 
   const sendVerificationCode = async () => {
@@ -68,7 +68,6 @@ export default function PasswordRecovery() {
         Alert.alert('Error', 'Código incorrecto');
       }
     } else {
-      // Validación de la nueva contraseña
       if (!isValidPassword(newPassword)) {
         Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
         return;
@@ -78,7 +77,6 @@ export default function PasswordRecovery() {
         return;
       }
       
-      // Aquí irían las llamadas a la API para actualizar la contraseña
       Alert.alert('Éxito', 'Contraseña actualizada correctamente', [
         { text: 'OK', onPress: () => router.back() }
       ]);
@@ -91,7 +89,6 @@ export default function PasswordRecovery() {
     setVerificationCode(newCode);
 
     if (text.length === 1 && index < 4) {
-      // Aquí iría la lógica para mover el foco al siguiente input
     }
   };
 

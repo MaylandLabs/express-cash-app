@@ -93,7 +93,7 @@ const Loan = ({ navigation }) => {
           style={[style.button, { backgroundColor: isApproved ? "#388E3C" : "#B71C1C" }]}
           onPress={() => {
             if (isApproved) {
-              router.push("/"); // Cambia "/asesor" por la ruta correspondiente que lleve a la página del asesor
+              router.push("/"); // Cambiar "/asesor" por la ruta correspondiente que lleve a la página del asesor
             } else {
               handleBack(); // Vuelve hacia atrás
             }
@@ -137,7 +137,7 @@ const Loan = ({ navigation }) => {
           </Text>
         </View>
 
-        {/* Dropdown for Monto */}
+      
         <Text style={[style.label, { fontFamily: "Poppins" }]}>Monto</Text>
         <Pressable
           style={style.selector}
@@ -170,7 +170,7 @@ const Loan = ({ navigation }) => {
           </View>
         )}
 
-        {/* Dropdown for Cuotas */}
+      
         <Text style={[style.labelC, { fontFamily: "Poppins" }]}>Cuotas</Text>
         <Pressable
           style={style.selector}

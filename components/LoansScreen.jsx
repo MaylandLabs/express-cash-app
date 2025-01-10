@@ -15,7 +15,6 @@ const LoansScreen = () => {
         </Pressable>
         <Text style={styles.title}>Mis préstamos</Text>
         
-        {/* Loan Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardAmount}>$ 75.000</Text>

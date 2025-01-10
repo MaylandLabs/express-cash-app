@@ -6,21 +6,23 @@ import { Stack } from "expo-router";
 import { styled } from "nativewind";
 import { useFonts, Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
+import { ArrowRight } from 'lucide-react-native';
 
 const StyledPressable = styled(Pressable);
 
 const HomeView = () => {
   const router = useRouter();
-  const [scale] = useState(new Animated.Value(1));
+  const [headerScale] = useState(new Animated.Value(1));
+  const [loanButtonScale] = useState(new Animated.Value(1));
+  const [statusCardScale] = useState(new Animated.Value(1));
 
-  // Cargar las fuentes
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
   });
 
-  const handlePressIn = () => {
+  const handlePressIn = (scale) => {
     Animated.spring(scale, {
       toValue: 0.95,
       useNativeDriver: true,
@@ -29,7 +31,7 @@ const HomeView = () => {
     }).start();
   };
 
-  const handlePressOut = () => {
+  const handlePressOut = (scale) => {
     Animated.spring(scale, {
       toValue: 1,
       useNativeDriver: true,
@@ -38,7 +40,6 @@ const HomeView = () => {
     }).start();
   };
 
-  // Mostrar la pantalla solo cuando las fuentes estén cargadas
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -61,17 +62,18 @@ const HomeView = () => {
         {/* Header */}
         <Pressable
           onPress={() => router.push('/(tabs)/profile')}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
+          onPressIn={() => handlePressIn(headerScale)}
+          onPressOut={() => handlePressOut(headerScale)}
         >
           <Animated.View
             style={[
               {
-                transform: [{ scale }],
+                transform: [{ scale: headerScale }],
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 12,
-                marginBottom: 20
+                marginBottom: 10,
+                top: -20
               }
             ]}
           >
@@ -80,7 +82,7 @@ const HomeView = () => {
               style={styles.userAvatar}
             />
             <Text style={[styles.greeting, { fontFamily: 'Poppins_500Medium' }]}>Hola, Félix</Text>
-            <Text style={[styles.arrow, { fontFamily: 'Poppins_400Regular' }]}>{'>'}</Text>
+            <ArrowRight size={18} color="white" />
           </Animated.View>
         </Pressable>
 
@@ -98,14 +100,24 @@ const HomeView = () => {
             </View>
 
             <View style={styles.buttonContainer}>
-              <StyledPressable
-                style={styles.loanButton}
+              <Pressable
                 onPress={() => router.push('/loan')}
+                onPressIn={() => handlePressIn(loanButtonScale)}
+                onPressOut={() => handlePressOut(loanButtonScale)}
               >
-                <Text style={[styles.buttonText, { fontFamily: 'Poppins_500Medium' }]}>
-                  Pedir un préstamo
-                </Text>
-              </StyledPressable>
+                <Animated.View
+                  style={[
+                    styles.loanButton,
+                    {
+                      transform: [{ scale: loanButtonScale }]
+                    }
+                  ]}
+                >
+                  <Text style={styles.buttonText}>
+                    Pedir un préstamo
+                  </Text>
+                </Animated.View>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -113,30 +125,44 @@ const HomeView = () => {
         {/* Current Loan Status */}
         <View style={styles.statusSection}>
           <Text style={[styles.statusTitle, { fontFamily: 'Poppins_500Medium' }]}>Mis préstamos</Text>
-          <View style={styles.statusCard}>
-            <View style={styles.statusInfoContainer}>
-              <Text style={[styles.amount, { fontFamily: 'Poppins_600SemiBold' }]}>$75.000</Text>
-              <Text style={[styles.smile, { fontFamily: 'Poppins_400Regular' }]}>😊</Text>
-              <Text style={[styles.status, { fontFamily: 'Poppins_400Regular' }]}> Al día</Text>
-            </View>
-            <Text style={[styles.date, { fontFamily: 'Poppins_400Regular' }]}>14 junio 2023</Text>
-
-            <View style={styles.paymentStatusContainer}>
-              <Text style={[styles.paymentStatusTitle, { fontFamily: 'Poppins_400Regular' }]}>Cuotas pagadas</Text>
-              <View style={styles.paymentProgress}>
-                {[...Array(10)].map((_, i) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.progressBarItem,
-                      i < 8 ? styles.progressBarItemActive : {}
-                    ]}
-                  />
-                ))}
+          
+          <Pressable
+            onPress={() => router.push('/MyLoans')}
+            onPressIn={() => handlePressIn(statusCardScale)}
+            onPressOut={() => handlePressOut(statusCardScale)}
+          >
+            <Animated.View
+              style={[
+                styles.statusCard,
+                {
+                  transform: [{ scale: statusCardScale }]
+                }
+              ]}
+            >
+              <View style={styles.statusInfoContainer}>
+                <Text style={[styles.amount, { fontFamily: 'Poppins_600SemiBold' }]}>$75.000</Text>
+                <Text style={[styles.smile, { fontFamily: 'Poppins_400Regular' }]}>😊</Text>
+                <Text style={[styles.status, { fontFamily: 'Poppins_400Regular' }]}> Al día</Text>
               </View>
-              <Text style={[styles.progressText, { fontFamily: 'Poppins_400Regular' }]}>8/10</Text>
-            </View>
-          </View>
+              <Text style={[styles.date, { fontFamily: 'Poppins_400Regular' }]}>14 junio 2023</Text>
+
+              <View style={styles.paymentStatusContainer}>
+                <Text style={[styles.paymentStatusTitle, { fontFamily: 'Poppins_400Regular' }]}>Cuotas pagadas</Text>
+                <View style={styles.paymentProgress}>
+                  {[...Array(10)].map((_, i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.progressBarItem,
+                        i < 8 ? styles.progressBarItemActive : {}
+                      ]}
+                    />
+                  ))}
+                </View>
+                <Text style={[styles.progressText, { fontFamily: 'Poppins_400Regular' }]}>8/10</Text>
+              </View>
+            </Animated.View>
+          </Pressable>
         </View>
       </View>
     </LinearGradient>
@@ -146,6 +172,15 @@ const HomeView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loanButton: {
+    backgroundColor: '#7CBA47',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,
@@ -162,14 +197,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: 'white',
+    top: 3
   },
   arrow: {
     color: 'white',
-    marginLeft: 'auto',
+    marginLeft: 10,
   },
   loanSection: {
     marginTop: 24,
     flex: 1,
+    top: -15
   },
   loanCard: {
     backgroundColor: '#006B7A',
@@ -204,10 +241,17 @@ const styles = StyleSheet.create({
     right: 16,
   },
   loanButton: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#79C72B',
-    width: 260,
+    backgroundColor: '#7CBA47',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background-color 0.3s ease', 
+  },
+  loanButtonHover: {
+    backgroundColor: '#66A73B',
   },
   buttonText: {
     textAlign: 'center',
@@ -222,6 +266,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginBottom: 8,
+    marginTop: 10
   },
   statusCard: {
     backgroundColor: '#006B7A',

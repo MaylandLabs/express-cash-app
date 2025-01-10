@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, Keyboard
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
-import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
+import { useFonts } from 'expo-font';
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -15,22 +15,20 @@ const LoginForm = () => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const router = useRouter();
 
-  // Cargar la fuente
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
 
   if (!fontsLoaded) {
-    return null;  // Asegura que se carguen las fuentes antes de renderizar
+    return null; 
   }
 
   // Simulación del login con usuario "Admin" y contraseña "Admin"
   const handleLogin = () => {
-    // Validación de credenciales
+    
     if (formData.email === 'Admin' && formData.password === 'Admin') {
-      // Redirigir al usuario a la página principal
-      router.push('/(tabs)/'); // Redirige a la página principal
+      router.push('/(tabs)/');
     } else {
       Alert.alert('Error', 'Credenciales incorrectas. Intenta de nuevo.');
     }
@@ -58,7 +56,7 @@ const LoginForm = () => {
       style={styles.gradient}
     >
       <View style={styles.mainContainer}>
-        {/* Parte superior fija con el formulario */}
+      
         <View style={styles.formContainer}>
           <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Iniciar Sesión</Text>
           <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
@@ -102,7 +100,7 @@ const LoginForm = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Parte inferior */}
+        
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.buttonContainer}
