@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from "expo-linear-gradient";
+import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
 
 export default function PasswordRecovery() {
   const [email, setEmail] = useState('');
@@ -20,6 +22,16 @@ export default function PasswordRecovery() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
+
+  // Cargar la fuente
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;  // Asegura que se carguen las fuentes antes de renderizar
+  }
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -85,14 +97,14 @@ export default function PasswordRecovery() {
 
   const renderEmailInput = () => (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Recuperar Contraseña</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Recuperar Contraseña</Text>
+      <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
         Resetea tu contraseña y vuelve a ingresar a tu cuenta personal.
       </Text>
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Email</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
         placeholder="Escribe tu email"
         placeholderTextColor="#A9A9A9"
         value={email}
@@ -105,8 +117,8 @@ export default function PasswordRecovery() {
 
   const renderVerificationCode = () => (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Código Confirmación</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Código Confirmación</Text>
+      <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
         Ingresa el código que enviamos a su email para ingresar una contraseña nueva.
       </Text>
 
@@ -127,14 +139,14 @@ export default function PasswordRecovery() {
 
   const renderNewPassword = () => (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Nueva Contraseña</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Nueva Contraseña</Text>
+      <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
         Ingresa una contraseña nueva para ingresar nuevamente a su cuenta.
       </Text>
 
-      <Text style={styles.label}>Contraseña</Text>
+      <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Contraseña</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
         placeholder="Ingresa tu nueva contraseña"
         placeholderTextColor="#A9A9A9"
         value={newPassword}
@@ -142,9 +154,9 @@ export default function PasswordRecovery() {
         secureTextEntry
       />
 
-      <Text style={styles.label}>Repetir contraseña</Text>
+      <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Repetir contraseña</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
         placeholder="Repite tu nueva contraseña"
         placeholderTextColor="#A9A9A9"
         value={confirmPassword}
@@ -175,7 +187,7 @@ export default function PasswordRecovery() {
             style={styles.continueButton} 
             onPress={handleContinue}
           >
-            <Text style={styles.continueButtonText}>Continuar</Text>
+            <Text style={[styles.continueButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Continuar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -190,7 +202,7 @@ export default function PasswordRecovery() {
               }
             }}
           >
-            <Text style={styles.backButtonText}>Volver</Text>
+            <Text style={[styles.backButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Volver</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>

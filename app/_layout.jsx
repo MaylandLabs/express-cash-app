@@ -2,7 +2,7 @@
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { redirect } from 'expo-router';
-import { checkAuth } from '../utils/auth';  // Asegúrate que la ruta sea correcta
+import { checkAuth } from '../utils/auth';
 
 export default function RootLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

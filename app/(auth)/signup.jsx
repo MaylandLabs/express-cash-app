@@ -1,8 +1,10 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient";
+import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function Signup() {
   const router = useRouter();
@@ -17,9 +19,22 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [backButton, setbackButton] = useState(false);
 
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null; // Esperamos a que las fuentes se carguen
+  }
 
   const handleSignup = async () => {
-    // Aquí va tu lógica de registro
     try {
       // Validaciones y llamada a la API
       router.replace('/(auth)');
@@ -29,121 +44,124 @@ export default function Signup() {
   };
 
   return (
-        <LinearGradient
-              colors={['#006B7A', '#004C5E']}
-              style={styles.gradient}
-            >
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrarse</Text>
-      <Text style={styles.subtitle}>
-        Crea una cuenta personal para acceder a todos nuestros beneficios.
-      </Text>
+    <LinearGradient
+      colors={['#006B7A', '#004C5E']}
+      style={styles.gradient}
+      onLayout={onLayoutRootView}
+    >
+      <View style={styles.container}>
+        <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Registrarse</Text>
+        <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
+          Crea una cuenta personal para acceder a todos nuestros beneficios.
+        </Text>
 
-      {/* Campo Email */}
-      <Text style={styles.label}>Email</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="dibu.martinez@gmail.com"
-          placeholderTextColor="#A9A9A9"
-          value={formData.email}
-          onChangeText={(text) => setFormData({...formData, email: text})}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
-
-      {/* Campo CUIL/CUIT */}
-      <Text style={styles.label}>CUIL/CUIT</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="12.345.678"
-          placeholderTextColor="#A9A9A9"
-          value={formData.cuil}
-          onChangeText={(text) => setFormData({...formData, cuil: text})}
-          keyboardType="numeric"
-        />
-      </View>
-
-      {/* Campo Teléfono */}
-      <Text style={styles.label}>Teléfono</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="+54 011-12345678"
-          placeholderTextColor="#A9A9A9"
-          value={formData.telefono}
-          onChangeText={(text) => setFormData({...formData, telefono: text})}
-          keyboardType="phone-pad"
-        />
-      </View>
-
-      {/* Campo Contraseña */}
-      <Text style={styles.label}>Contraseña</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••••"
-          placeholderTextColor="#A9A9A9"
-          value={formData.password}
-          onChangeText={(text) => setFormData({...formData, password: text})}
-          secureTextEntry={!showPassword}
-        />
-        <TouchableOpacity 
-          style={styles.eyeIcon}
-          onPress={() => setShowPassword(!showPassword)}
-        >
-          <Ionicons 
-            name={showPassword ? "eye-outline" : "eye-off-outline"} 
-            size={24} 
-            color="#7CBA47"
+        {/* Campo Email */}
+        <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Email</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="dibu.martinez@gmail.com"
+            placeholderTextColor="#A9A9A9"
+            value={formData.email}
+            onChangeText={(text) => setFormData({...formData, email: text})}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
+        </View>
+
+        {/* Campo CUIL/CUIT */}
+        <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>CUIL/CUIT</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="12.345.678"
+            placeholderTextColor="#A9A9A9"
+            value={formData.cuil}
+            onChangeText={(text) => setFormData({...formData, cuil: text})}
+            keyboardType="numeric"
+          />
+        </View>
+
+        {/* Campo Teléfono */}
+        <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Teléfono</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="+54 011-12345678"
+            placeholderTextColor="#A9A9A9"
+            value={formData.telefono}
+            onChangeText={(text) => setFormData({...formData, telefono: text})}
+            keyboardType="phone-pad"
+          />
+        </View>
+
+        {/* Campo Contraseña */}
+        <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Contraseña</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="••••••••••"
+            placeholderTextColor="#A9A9A9"
+            value={formData.password}
+            onChangeText={(text) => setFormData({...formData, password: text})}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity 
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons 
+              name={showPassword ? "eye-outline" : "eye-off-outline"} 
+              size={24} 
+              color="#7CBA47"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Campo Repetir Contraseña */}
+        <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Repetir Contraseña</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="••••••••••"
+            placeholderTextColor="#A9A9A9"
+            value={formData.confirmPassword}
+            onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
+            secureTextEntry={!showConfirmPassword}
+          />
+          <TouchableOpacity 
+            style={styles.eyeIcon}
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <Ionicons 
+              name={showConfirmPassword ? "eye-outline" : "eye-off-outline"} 
+              size={24} 
+              color="#7CBA47"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Botón de Registro */}
+        <TouchableOpacity 
+          style={styles.registerButton}
+          onPress={handleSignup}
+        >
+          <Text style={[styles.registerButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Registrarse</Text>
+        </TouchableOpacity>
+
+        {/* Botón de Volver */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() =>
+            router.push({
+              pathname: '/(auth)/login-form',
+              params: { transition: 'fade' },
+            })
+          }
+        >
+          <Text style={[styles.backButtonText, { fontFamily: 'Poppins_400Regular' }]}>Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Campo Repetir Contraseña */}
-      <Text style={styles.label}>Repetir Contraseña</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••••"
-          placeholderTextColor="#A9A9A9"
-          value={formData.confirmPassword}
-          onChangeText={(text) => setFormData({...formData, confirmPassword: text})}
-          secureTextEntry={!showConfirmPassword}
-        />
-        <TouchableOpacity 
-          style={styles.eyeIcon}
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-        >
-          <Ionicons 
-            name={showConfirmPassword ? "eye-outline" : "eye-off-outline"} 
-            size={24} 
-            color="#7CBA47"
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Botón de Registro */}
-      <TouchableOpacity 
-        style={styles.registerButton}
-        onPress={handleSignup}
-      >
-        <Text style={styles.registerButtonText}>Registrarse</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-  style={styles.backButton}
-  onPress={() =>
-    router.push({
-      pathname: '/(auth)/login-form',
-      params: { transition: 'fade' }, // Agregar transición
-    })
-  }
->
-  <Text style={styles.backButtonText}>Iniciar secion</Text>
-</TouchableOpacity>
-    </View>
     </LinearGradient>
   );
 }
@@ -179,7 +197,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 20,
     position: 'relative',
-    
   },
   input: {
     backgroundColor: '#004D56',

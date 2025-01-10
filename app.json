@@ -6,6 +6,11 @@
     "version": "1.0.0",
     "scheme": "expresscash",
     "orientation": "portrait",
+    "fonts": [
+      {
+        "asset": "@expo-google-fonts/poppins"
+      }
+    ],
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "dark",
     "splash": {
@@ -22,6 +27,7 @@
         "backgroundColor": "#ffffff"
       }
     },
+    
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -29,5 +35,6 @@
       "expo-router",
       "expo-font"
     ]
+
   }
 }

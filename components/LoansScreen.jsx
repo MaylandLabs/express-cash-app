@@ -8,35 +8,35 @@ const LoansScreen = () => {
    const router = useRouter();
 
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={{ flex: 1 }}>
-      <View className="flex-1 p-6">
-      <Pressable onPress={() => router.push("/(tabs)/")} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </Pressable>
-        <Text className="text-white text-xl font-semibold mb-6">Mis préstamos</Text>
+    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container}>
+      <View style={styles.content}>
+        <Pressable onPress={() => router.push("/(tabs)/profile")} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </Pressable>
+        <Text style={styles.title}>Mis préstamos</Text>
         
         {/* Loan Card */}
-        <View className="bg-[#006B7A] p-4 rounded-2xl mb-4">
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-white text-2xl font-bold">$ 75.000</Text>
-            <View className="flex-row items-center">
-              <Text className="text-white/80 mr-2">Al día</Text>
-              <Text className="text-yellow-400 text-2xl">😊</Text>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardAmount}>$ 75.000</Text>
+            <View style={styles.cardStatus}>
+              <Text style={styles.cardStatusText}>Al día</Text>
+              <Text style={styles.cardStatusIcon}>😊</Text>
             </View>
           </View>
           
-          <Text className="text-white/60 text-sm mb-4">19 junio 2023</Text>
+          <Text style={styles.cardDate}>19 junio 2023</Text>
           
-          <Text className="text-white/80 text-sm mb-2">Cuotas pagadas</Text>
-          <View className="flex-row gap-1">
-                {[...Array(10)].map((_, i) => (
-                  <View 
-                    key={i}
-                    className={`flex-1 h-1.5 rounded-full ${i < 8 ? 'bg-[#79C72B]' : 'bg-white/20'}`}
-                  />
-                ))}
-              </View>
-          <Text className="text-white/60 text-sm">9/19</Text>
+          <Text style={styles.cardSubTitle}>Cuotas pagadas</Text>
+          <View style={styles.progressBar}>
+            {[...Array(10)].map((_, i) => (
+              <View 
+                key={i}
+                style={[styles.progressBarItem, i < 8 ? styles.progressBarFilled : styles.progressBarEmpty]}
+              />
+            ))}
+          </View>
+          <Text style={styles.cardSubText}>9/19</Text>
         </View>
       </View>
     </LinearGradient>
@@ -44,10 +44,91 @@ const LoansScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+  },
   backButton: {
     marginRight: 15,
+    marginBottom: 25,
   },
-}
-)
+  title: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 24,
+    fontFamily: 'Poppins',
+  },
+  card: {
+    backgroundColor: '#006B7A',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  cardAmount: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+    fontFamily: 'Poppins',
+  },
+  cardStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardStatusText: {
+    color: 'white',
+    opacity: 0.8,
+    marginRight: 8,
+    fontFamily: 'Poppins',
+  },
+  cardStatusIcon: {
+    color: '#FFCC00',
+    fontSize: 24,
+  },
+  cardDate: {
+    color: 'white',
+    opacity: 0.6,
+    fontSize: 14,
+    marginBottom: 16,
+    fontFamily: 'Poppins',
+  },
+  cardSubTitle: {
+    color: 'white',
+    opacity: 0.8,
+    fontSize: 14,
+    marginBottom: 8,
+    fontFamily: 'Poppins',
+  },
+  progressBar: {
+    flexDirection: 'row',
+    gap: 4,
+    marginBottom: 8,
+  },
+  progressBarItem: {
+    flex: 1,
+    height: 6,
+    borderRadius: 4,
+  },
+  progressBarFilled: {
+    backgroundColor: '#79C72B',
+  },
+  progressBarEmpty: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  cardSubText: {
+    color: 'white',
+    opacity: 0.6,
+    fontSize: 14,
+    fontFamily: 'Poppins',
+  },
+});
 
 export default LoansScreen;

@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, Keyboard
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +14,16 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const router = useRouter();
+
+  // Cargar la fuente
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;  // Asegura que se carguen las fuentes antes de renderizar
+  }
 
   // Simulación del login con usuario "Admin" y contraseña "Admin"
   const handleLogin = () => {
@@ -45,18 +57,17 @@ const LoginForm = () => {
       colors={['#006B7A', '#004C5E']}
       style={styles.gradient}
     >
-      {/* Contenedor principal dividido en dos partes */}
       <View style={styles.mainContainer}>
         {/* Parte superior fija con el formulario */}
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Iniciar Sesión</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Iniciar Sesión</Text>
+          <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
             Completa los datos para acceder a todos nuestros beneficios.
           </Text>
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
             placeholder="dibu.martinez@gmail.com"
             placeholderTextColor="#A9A9A9"
             keyboardType="email-address"
@@ -64,10 +75,10 @@ const LoginForm = () => {
             onChangeText={(text) => setFormData({ ...formData, email: text })}
           />
 
-          <Text style={styles.label}>Contraseña</Text>
+          <Text style={[styles.label, { fontFamily: 'Poppins_400Regular' }]}>Contraseña</Text>
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.passwordInput}
+              style={[styles.passwordInput, { fontFamily: 'Poppins_400Regular' }]}
               placeholder="••••••••••"
               placeholderTextColor="#A9A9A9"
               value={formData.password}
@@ -87,23 +98,23 @@ const LoginForm = () => {
           </View>
 
           <TouchableOpacity onPress={() => router.push('/(auth)/passwordRecovery')}>
-            <Text style={styles.forgotPassword}>¿Has olvidado tu contraseña?</Text>
+            <Text style={[styles.forgotPassword, { fontFamily: 'Poppins_400Regular' }]}>¿Has olvidado tu contraseña?</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Parte inferior con los botones que se ajustan al teclado */}
+        {/* Parte inferior */}
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.buttonContainer}
         >
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+            <Text style={[styles.loginButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Iniciar sesión</Text>
           </TouchableOpacity>
 
-          <Text style={styles.registerText}>
+          <Text style={[styles.registerText, { fontFamily: 'Poppins_400Regular' }]}>
             ¿No tienes cuenta aún?{' '}
             <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-            <Text style={styles.registerLink}>Regístrate</Text>
+            <Text style={[styles.registerLink, { fontFamily: 'Poppins_600SemiBold' }]}>Regístrate</Text>
             </TouchableOpacity>
           </Text>
         </KeyboardAvoidingView>

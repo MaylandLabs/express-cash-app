@@ -1,9 +1,12 @@
 import React from "react";
-import { Text, View, Image, Pressable, Switch, Animated } from "react-native";
+import { Text, View, Image, Pressable, Switch, Animated, StyleSheet } from "react-native";
 import { styled } from "nativewind";
 import { LinearGradient } from "expo-linear-gradient";
 import { Wallet, HelpCircle, Bell, Settings, DoorClosed, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { useCallback } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
 
 const StyledPressable = styled(Pressable);
 
@@ -11,12 +14,18 @@ const Profile = () => {
   const router = useRouter();
   const [isPushEnabled, setIsPushEnabled] = React.useState(false);
 
-  // Animaciones independientes para cada botón
+  // Definir las animaciones para cada botón
   const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const loansAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const supportAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const settingsAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const logoutAnimatedScale = React.useRef(new Animated.Value(1)).current;
+
+  // Cargar las fuentes
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+  });
 
   const toggleSwitch = () => setIsPushEnabled((previousState) => !previousState);
 
@@ -38,99 +47,77 @@ const Profile = () => {
     }).start();
   };
 
+  // Esperar que las fuentes se carguen antes de mostrar la interfaz
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={{ flex: 1 }}>
-      <View className="flex-1 pt-4 px-6">
+    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
+      <View style={styles.content}>
         {/* Header */}
-        <Text className="text-white text-lg font-semibold text-center">Mi perfil</Text>
+        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>
 
         {/* Profile Section */}
-        <View className="items-center mt-4">
-          <View className="bg-[#007A7C] w-20 h-20 rounded-full items-center justify-center mb-2">
+        <View style={styles.profileSection}>
+          <View style={styles.profileImageWrapper}>
             <Image
               source={require("../../assets/favicon.png")}
-              className="w-16 h-16"
+              style={styles.profileImage}
               resizeMode="contain"
             />
           </View>
-          <Text className="text-white text-xl font-semibold">Félix Bilbao</Text>
-          <Text className="text-white/80 text-sm mb-4">
-            felixbilbao01@gmail.com
-          </Text>
+          <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>Félix Bilbao</Text>
+          <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>felixbilbao01@gmail.com</Text>
 
           {/* Botón "Editar perfil" con animación de hover */}
-          <Animated.View style={{
-            transform: [{ scale: editProfileAnimatedScale }]
-          }}>
+          <Animated.View style={{ transform: [{ scale: editProfileAnimatedScale }] }}>
             <StyledPressable
-              className="bg-[#79C72B] py-2 px-8 rounded-lg"
+              style={styles.editProfileButton}
               onPressIn={() => handlePressIn(editProfileAnimatedScale)}
               onPressOut={() => handlePressOut(editProfileAnimatedScale)}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed ? 'rgba(121, 199, 43, 0.7)' : '#79C72B', // Cambia el color al presionar
-                  padding: 12,
-                  borderRadius: 12,
-                }
-              ]}
             >
-              <Text className="text-white text-sm font-semibold">
-                Editar perfil
-              </Text>
+              <Text style={[styles.editProfileButtonText, { fontFamily: 'Poppins_400Regular' }]}>Editar perfil</Text>
             </StyledPressable>
           </Animated.View>
         </View>
 
         {/* Account Section */}
-        <View className="mt-6">
-          <Text className="text-white/60 text-sm font-semibold mb-2 mt-[-10px]">
-            Mi cuenta
-          </Text>
-          <View className="bg-[#006B7A] p-4 rounded-2xl mb-6">
-            <Animated.View style={{
-              transform: [{ scale: loansAnimatedScale }]
-            }}>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { fontFamily: 'Poppins_600SemiBold' }]}>Mi cuenta</Text>
+          <View style={styles.card}>
+            <Animated.View style={{ transform: [{ scale: loansAnimatedScale }] }}>
               <StyledPressable
-                className="flex-row items-center justify-between mb-3"
+                style={styles.cardItem}
                 onPress={() => router.push('/MyLoans')}
                 onPressIn={() => handlePressIn(loansAnimatedScale)}
                 onPressOut={() => handlePressOut(loansAnimatedScale)}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
-                    padding: 12,
-                    borderRadius: 12,
-                  }
-                ]}
               >
-                <View className="flex-row items-center flex-1">
+                <View style={styles.cardItemContent}>
                   <Wallet size={24} color="white" />
-                  <Text className="text-white text-sm ml-4 flex-1">Mis préstamos</Text>
+                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Mis préstamos</Text>
                   <ArrowRight size={24} color="white" />
                 </View>
               </StyledPressable>
             </Animated.View>
 
-            <View className="h-[1px] bg-white/30 my-3"></View>
+            <View style={styles.divider}></View>
 
-            <Animated.View style={{
-              transform: [{ scale: supportAnimatedScale }]
-            }}>
+            <Animated.View style={{ transform: [{ scale: supportAnimatedScale }] }}>
               <StyledPressable
-                className="flex-row items-center justify-between mb-3"
+                style={styles.cardItem}
                 onPressIn={() => handlePressIn(supportAnimatedScale)}
                 onPressOut={() => handlePressOut(supportAnimatedScale)}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
-                    padding: 12,
-                    borderRadius: 12,
-                  }
-                ]}
               >
-                <View className="flex-row items-center flex-1 mt-1 mb-[-10px]">
+                <View style={styles.cardItemContent}>
                   <HelpCircle size={24} color="white" />
-                  <Text className="text-white text-sm ml-4 flex-1">Soporte</Text>
+                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Soporte</Text>
                   <ArrowRight size={24} color="white" />
                 </View>
               </StyledPressable>
@@ -140,13 +127,11 @@ const Profile = () => {
 
         {/* Preferences Section */}
         <View>
-          <Text className="text-white/60 text-sm font-semibold mb-2 mt-[-10px]">
-            Preferencias
-          </Text>
-          <View className="bg-[#006B7A] p-4 rounded-2xl">
-            <View className="flex-row items-center justify-between mb-2">
+          <Text style={[styles.sectionTitle, { fontFamily: 'Poppins_600SemiBold' }]}>Preferencias</Text>
+          <View style={styles.card}>
+            <View style={styles.cardItem}>
               <Bell size={24} color="white" />
-              <Text className="text-white text-sm ml-[-100px]">Notificaciones push</Text>
+              <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Notificaciones push</Text>
               <Switch
                 value={isPushEnabled}
                 onValueChange={toggleSwitch}
@@ -154,59 +139,144 @@ const Profile = () => {
                 thumbColor={isPushEnabled ? "#ffffff" : "#f4f3f4"}
               />
             </View>
-            <View className="h-[1px] bg-white/30 mb-4"></View>
-            
-            <Animated.View style={{
-              transform: [{ scale: settingsAnimatedScale }]
-            }}>
+            <View style={styles.divider}></View>
+
+            <Animated.View style={{ transform: [{ scale: settingsAnimatedScale }] }}>
               <StyledPressable
-                className="flex-row items-center justify-between mb-3"
+                style={styles.cardItem}
                 onPressIn={() => handlePressIn(settingsAnimatedScale)}
                 onPressOut={() => handlePressOut(settingsAnimatedScale)}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
-                    padding: 12,
-                    borderRadius: 12,
-                  }
-                ]}
               >
-                <View className="flex-row items-center flex-1">
+                <View style={styles.cardItemContent}>
                   <Settings size={24} color="white" />
-                  <Text className="text-white text-sm ml-4 flex-1">Configuración</Text>
+                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Configuración</Text>
                   <ArrowRight size={24} color="white" />
                 </View>
               </StyledPressable>
             </Animated.View>
 
-            <View className="h-[1px] bg-white/30 mt-2 mb-4"></View>
-                       <Animated.View style={{
-              transform: [{ scale: logoutAnimatedScale }]}
-            }>
+            <View style={styles.divider}></View>
+
+            <Animated.View style={{ transform: [{ scale: logoutAnimatedScale }] }}>
               <StyledPressable
-                className="flex-row items-center justify-between"
+                style={styles.cardItem}
                 onPress={() => router.push('/(auth)/')}
                 onPressIn={() => handlePressIn(logoutAnimatedScale)}
                 onPressOut={() => handlePressOut(logoutAnimatedScale)}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? 'rgba(121, 199, 43, 0.1)' : 'transparent',
-                    padding: 12,
-                    borderRadius: 12,
-                  }
-                ]}
               >
-                <View className="flex-row items-center flex-1">
+                <View style={styles.cardItemContent}>
                   <DoorClosed size={24} color="salmon" />
-                  <Text className="text-white text-sm ml-4 flex-1 mb-2 top-1">Cerrar sesión</Text>
+                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Cerrar sesión</Text>
                 </View>
               </StyledPressable>
-              </Animated.View>
+            </Animated.View>
           </View>
         </View>
       </View>
     </LinearGradient>
   );
 };
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+  },
+  header: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'center',
+    fontFamily: 'Poppins',
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  profileImageWrapper: {
+    backgroundColor: '#007A7C',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  profileImage: {
+    width: 64,
+    height: 64,
+  },
+  profileName: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Poppins',
+  },
+  profileEmail: {
+    color: 'white',
+    opacity: 0.8,
+    fontSize: 14,
+    marginBottom: 16,
+    fontFamily: 'Poppins',
+  },
+  editProfileButton: {
+    backgroundColor: '#79C72B',
+    paddingVertical: 8,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+  },
+  editProfileButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    fontFamily: 'Poppins', 
+  },
+  section: {
+    marginTop: 24,
+  },
+  sectionTitle: {
+    color: 'white',
+    opacity: 0.6,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    fontFamily: 'Poppins',
+  },
+  card: {
+    backgroundColor: '#006B7A',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 24,
+  },
+  cardItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  cardItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  cardItemText: {
+    color: 'white',
+    fontSize: 14,
+    marginLeft: 16,
+    fontFamily: 'Poppins', 
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'white',
+    opacity: 0.3,
+    marginVertical: 12,
+  },
+});
 
 export default Profile;

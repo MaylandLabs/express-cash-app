@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from '../../utils/auth';
+import { useFonts } from 'expo-font';  // Necesario para usar las fuentes
+import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';  // Importar la fuente
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Cargar la fuente
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;  // Asegura que las fuentes se carguen antes de renderizar
+  }
 
   const handleLogin = async () => {
     try {
@@ -27,20 +39,20 @@ export default function Login() {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.welcomeText}>¡Bienvenido! 👋</Text>
-      <Text style={styles.subText}>Crea una cuenta personal para acceder a todos nuestros beneficios.</Text>
+      <Text style={[styles.welcomeText, { fontFamily: 'Poppins_600SemiBold' }]}>¡Bienvenido! 👋</Text>
+      <Text style={[styles.subText, { fontFamily: 'Poppins_400Regular' }]}>Crea una cuenta personal para acceder a todos nuestros beneficios.</Text>
 
       <TouchableOpacity style={styles.googleButton}>
         <Image
           source={require('../../assets/google-icon.png')}
           style={styles.googleIcon}
         />
-        <Text style={styles.googleButtonText}>Iniciar sesión con Google</Text>
+        <Text style={[styles.googleButtonText, { fontFamily: 'Poppins_400Regular' }]}>Iniciar sesión con Google</Text>
       </TouchableOpacity>
 
       <View style={styles.divider}>
         <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>o</Text>
+        <Text style={[styles.dividerText, { fontFamily: 'Poppins_400Regular' }]}>o</Text>
         <View style={styles.dividerLine} />
       </View>
 
@@ -48,13 +60,13 @@ export default function Login() {
         style={styles.loginButton}
         onPress={() => router.push('/(auth)/login-form')}
       >
-        <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+        <Text style={[styles.loginButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Iniciar sesión</Text>
       </TouchableOpacity>
 
       <View style={styles.registerContainer}>
-        <Text style={styles.registerText}>¿No tienes cuenta aún? </Text>
+        <Text style={[styles.registerText, { fontFamily: 'Poppins_400Regular' }]}>¿No tienes cuenta aún? </Text>
         <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-          <Text style={styles.registerLink}>Regístrate</Text>
+          <Text style={[styles.registerLink, { fontFamily: 'Poppins_600SemiBold' }]}>Regístrate</Text>
         </TouchableOpacity>
       </View>
       
