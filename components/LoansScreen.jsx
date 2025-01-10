@@ -1,18 +1,47 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const LoansScreen = () => {
-   const router = useRouter();
+  const router = useRouter();
+
+
+  const backButtonAnimatedScale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(backButtonAnimatedScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 2, 
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(backButtonAnimatedScale, {
+      toValue: 1, 
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 2,
+    }).start();
+  };
 
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container}>
       <View style={styles.content}>
-        <Pressable onPress={() => router.push("/(tabs)/profile")} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </Pressable>
+        <Animated.View style={{ transform: [{ scale: backButtonAnimatedScale }] }}>
+          <Pressable 
+            onPress={() => router.push("/(tabs)/profile")} 
+            style={styles.backButton}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </Pressable>
+        </Animated.View>
+
         <Text style={styles.title}>Mis préstamos</Text>
         
         <View style={styles.card}>

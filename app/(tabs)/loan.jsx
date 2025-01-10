@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +31,40 @@ const Loan = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loanStatus, setLoanStatus] = useState(null);
   const router = useRouter();
+
+  // Animación para el botón de retroceso
+  const [scale] = useState(new Animated.Value(1));
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.8,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  // Animación para el botón de "Continuar con el préstamo"
+  const [scaleContinue] = useState(new Animated.Value(1));
+
+  const handlePressInContinue = () => {
+    Animated.spring(scaleContinue, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOutContinue = () => {
+    Animated.spring(scaleContinue, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handleMontoSelect = (value) => {
     setSelectedMonto(value);
@@ -93,13 +128,13 @@ const Loan = ({ navigation }) => {
           style={[style.button, { backgroundColor: isApproved ? "#388E3C" : "#B71C1C" }]}
           onPress={() => {
             if (isApproved) {
-              router.push("/"); // Cambiar "/asesor" por la ruta correspondiente que lleve a la página del asesor
+              router.push("/");
             } else {
-              handleBack(); // Vuelve hacia atrás
+              handleBack();
             }
           }}
         >
-          <Text style={style.buttonText}> 
+          <Text style={style.buttonText}>
             {isApproved ? "Continuar con el asesor" : "Volver al home"}
           </Text>
         </Pressable>
@@ -129,15 +164,21 @@ const Loan = ({ navigation }) => {
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={style.container}>
       <View style={style.content}>
         <View style={style.header}>
-          <Pressable onPress={() => router.push("/")} style={style.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
+          <Pressable
+            onPress={handleBack}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            style={style.backButton}
+          >
+            <Animated.View style={{ transform: [{ scale }] }}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </Animated.View>
           </Pressable>
           <Text style={[style.headerText, { fontFamily: "Poppins" }]}>
             Solicitar préstamo
           </Text>
         </View>
 
-      
         <Text style={[style.label, { fontFamily: "Poppins" }]}>Monto</Text>
         <Pressable
           style={style.selector}
@@ -170,7 +211,6 @@ const Loan = ({ navigation }) => {
           </View>
         )}
 
-      
         <Text style={[style.labelC, { fontFamily: "Poppins" }]}>Cuotas</Text>
         <Pressable
           style={style.selector}
@@ -203,9 +243,18 @@ const Loan = ({ navigation }) => {
           </View>
         )}
 
-        <Pressable style={style.button} onPress={handleContinue}>
-          <Text style={style.buttonText}>Continuar con el préstamo</Text>
-        </Pressable>
+        <View style={style.bottomButtonContainer}>
+          <Animated.View style={{ transform: [{ scale: scaleContinue }], width: '100%' }}>
+            <Pressable
+              style={style.button}
+              onPress={handleContinue}
+              onPressIn={handlePressInContinue}
+              onPressOut={handlePressOutContinue}
+            >
+              <Text style={style.buttonText}>Continuar con el préstamo</Text>
+            </Pressable>
+          </Animated.View>
+        </View>
       </View>
     </LinearGradient>
   );
@@ -223,6 +272,20 @@ const style = {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 30,
+  },
+  bottomButtonContainer: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  button: {
+    backgroundColor: "#8BC34A",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    width: '100%',
   },
   backButton: {
     marginRight: 15,
