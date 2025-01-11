@@ -49,7 +49,6 @@ const Loan = ({ navigation }) => {
     }).start();
   };
 
-  // Animación para el botón de "Continuar con el préstamo"
   const [scaleContinue] = useState(new Animated.Value(1));
 
   const handlePressInContinue = () => {

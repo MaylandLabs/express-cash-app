@@ -61,7 +61,8 @@ const Profile = () => {
   return (
     <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
       <View style={styles.content}>
-        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>  
+        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>
+  
         <View style={styles.profileSection}>
           <View style={styles.profileImageWrapper}>
             <Image
@@ -79,6 +80,7 @@ const Profile = () => {
               style={styles.editProfileButton}
               onPressIn={() => handlePressIn(editProfileAnimatedScale)}
               onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              onPress={() => router.push('/editProfile')} 
             >
               <Text style={[styles.editProfileButtonText, { fontFamily: 'Poppins_400Regular' }]}>Editar perfil</Text>
             </StyledPressable>
@@ -141,20 +143,21 @@ const Profile = () => {
             </View>
           </View>
             <View style={styles.divider}></View>
-
             <Animated.View style={{ transform: [{ scale: settingsAnimatedScale }] }}>
-              <StyledPressable
-                style={styles.cardItem}
-                onPressIn={() => handlePressIn(settingsAnimatedScale)}
-                onPressOut={() => handlePressOut(settingsAnimatedScale)}
-              >
-                <View style={styles.cardItemContent}>
-                  <Settings size={24} color="white" />
-                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Configuración</Text>
-                  <ArrowRight size={24} color="white" />
-                </View>
-              </StyledPressable>
-            </Animated.View>
+            <StyledPressable
+              style={styles.cardItem}
+              onPressIn={() => handlePressIn(settingsAnimatedScale)}
+              onPressOut={() => handlePressOut(settingsAnimatedScale)}
+              onPress={() => router.push('/config')}  // Redirige a la ruta "/"
+            >
+              <View style={styles.cardItemContent}>
+                <Settings size={24} color="white" />
+                <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Configuración</Text>
+                <ArrowRight size={24} color="white" />
+              </View>
+            </StyledPressable>
+          </Animated.View>
+            
 
             <View style={styles.divider}></View>
 
