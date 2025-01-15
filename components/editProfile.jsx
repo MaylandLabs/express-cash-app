@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Text, View, Image, Pressable, TextInput, Animated, StyleSheet } from "react-native";
+import { Text, View, Image, Pressable, TextInput, Animated, StyleSheet, Alert } from "react-native";
 import { styled } from "nativewind";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
+import * as ImagePicker from 'expo-image-picker';
+
 
 const StyledPressable = styled(Pressable);
 
@@ -15,7 +17,7 @@ const EditProfile = () => {
   const [email, setEmail] = useState("felixbilbao01@gmail.com");
   const [phone, setPhone] = useState("123-456-789");
   const [address, setAddress] = useState("Calle Ficticia 123");
-  const [image, setImage] = useState(require("../assets/favicon.png")); 
+  const [image, setImage] = useState(require("../assets/favicon.png"));
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
@@ -50,76 +52,137 @@ const EditProfile = () => {
     }
   };
 
+  const handleChangeImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert("Permiso requerido", "Se necesita permiso para acceder a la galería.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+        exif: false,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setImage({ uri: result.assets[0].uri });
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cargar la imagen. Por favor, intente nuevamente.");
+    }
+  };
+
+  const handleSaveChanges = () => {
+    
+    Alert.alert("Cambios guardados exitosamente.");
+  };
+
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
+    <LinearGradient 
+      colors={["#006B7A", "#004C5E"]} 
+      style={styles.container} 
+      onLayout={onLayoutRootView}
+    >
       <View style={styles.content}>
-        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Editar perfil</Text>  
+        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>
+          Editar perfil
+        </Text>  
+        
         <View style={styles.profileSection}>
-          <View style={styles.profileImageWrapper}>
+          <View style={styles.profileImageContainer}>
+            <View style={styles.profileImageWrapper}>
             <Image
-              source={image}
-              style={styles.profileImage}
-              resizeMode="contain"
-            />
+                source={image}
+                style={styles.profileImage}
+                resizeMode="cover"
+                defaultSource={require("../assets/favicon.png")}
+              />
+            </View>
             <StyledPressable
               style={styles.changeImageButton}
               onPressIn={() => handlePressIn(editProfileAnimatedScale)}
               onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              onPress={handleChangeImage}
             >
-              <Text style={[styles.changeImageButtonText, { fontFamily: 'Poppins_400Regular' }]}>Cambiar imagen</Text>
+              <Text style={[styles.changeImageButtonText, { fontFamily: 'Poppins_400Regular' }]}>
+                Cambiar imagen
+              </Text>
             </StyledPressable>
           </View>
           
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre y Apellido"
-            placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Correo electrónico"
-            placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Teléfono"
-            placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            value={phone}
-            onChangeText={setPhone}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Dirección"
-            placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            value={address}
-            onChangeText={setAddress}
-          />
+          <View style={styles.formContainer}>
+            <TextInput
+              style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
+              placeholder="Nombre y Apellido"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
+              placeholder="Correo electrónico"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
+              placeholder="Teléfono"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              value={phone}
+              onChangeText={setPhone}
+            />
+            <TextInput
+              style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
+              placeholder="Dirección"
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              value={address}
+              onChangeText={setAddress}
+            />
+          </View>
 
-          <StyledPressable
-            style={styles.changePasswordButton}
-            onPressIn={() => handlePressIn(editProfileAnimatedScale)}
-            onPressOut={() => handlePressOut(editProfileAnimatedScale)}
-            onPress={() => setPasswordModalVisible(true)}
-          >
-            <Text style={[styles.buttonText, { fontFamily: 'Poppins_400Regular' }]}>Cambiar contraseña</Text>
-          </StyledPressable>
+          <View style={styles.actionsContainer}>
+            <StyledPressable
+              style={styles.actionButton}
+              onPressIn={() => handlePressIn(editProfileAnimatedScale)}
+              onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              onPress={() => setPasswordModalVisible(true)}
+            >
+              <Text style={[styles.actionButtonText, { fontFamily: 'Poppins_400Regular' }]}>
+                Cambiar contraseña
+              </Text>
+            </StyledPressable>
 
-          <StyledPressable
-            style={styles.changeEmailButton}
-            onPressIn={() => handlePressIn(editProfileAnimatedScale)}
-            onPressOut={() => handlePressOut(editProfileAnimatedScale)}
-            onPress={() => setEmailModalVisible(true)}
-          >
-            <Text style={[styles.buttonText, { fontFamily: 'Poppins_400Regular' }]}>Cambiar correo electrónico</Text>
-          </StyledPressable>
+            <StyledPressable
+              style={styles.actionButton}
+              onPressIn={() => handlePressIn(editProfileAnimatedScale)}
+              onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              onPress={() => setEmailModalVisible(true)}
+            >
+              <Text style={[styles.actionButtonText, { fontFamily: 'Poppins_400Regular' }]}>
+                Cambiar correo electrónico
+              </Text>
+            </StyledPressable>
+
+            <StyledPressable
+              style={styles.saveButton}
+              onPressIn={() => handlePressIn(editProfileAnimatedScale)}
+              onPressOut={() => handlePressOut(editProfileAnimatedScale)}
+              onPress={handleSaveChanges}
+            >
+              <Text style={[styles.saveButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>
+                Guardar
+              </Text>
+            </StyledPressable>
+          </View>
         </View>
       </View>
     </LinearGradient>
@@ -132,79 +195,84 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    padding: 20,
   },
   header: {
     color: 'white',
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 28,
     textAlign: 'center',
-    fontFamily: 'Poppins',
-    marginBottom: 20,
+    marginBottom: 30,
+    marginTop: 20,
   },
   profileSection: {
+    flex: 1,
     alignItems: 'center',
-    marginTop: 16,
+  },
+  profileImageContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
   },
   profileImageWrapper: {
-    backgroundColor: '#007A7C',
     width: 120,
     height: 120,
     borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
+    backgroundColor: '#E0E0E0',
+    overflow: 'hidden',
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: '100%',
+    height: '100%',
+    aspectRatio: 1,
   },
   changeImageButton: {
-    backgroundColor: '#79C72B',
     paddingVertical: 8,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    marginTop: 8,
+    paddingHorizontal: 16,
   },
   changeImageButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#79C72B',
+    fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'Poppins',
+  },
+  formContainer: {
+    width: '100%',
+    marginBottom: 30,
   },
   input: {
     width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
     color: 'white',
     fontSize: 16,
-    fontFamily: 'Poppins',
   },
-  changePasswordButton: {
-    backgroundColor: '#79C72B',
+  actionsContainer: {
+    width: '100%',
+    gap: 12,
+  },
+  actionButton: {
     paddingVertical: 12,
-    paddingHorizontal: 32,
     borderRadius: 12,
-    marginTop: 12,
   },
-  changeEmailButton: {
-    backgroundColor: '#79C72B',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    marginTop: 12,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+  actionButtonText: {
+    color: '#79C72B',
+    fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'Poppins',
+  },
+  saveButton: {
+    paddingVertical: 12,
+    backgroundColor: '#79C72B',
+    borderRadius: 12,
+    marginTop: 20,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

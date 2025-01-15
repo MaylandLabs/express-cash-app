@@ -155,25 +155,7 @@ const Config = () => {
           </View>
         </View>
 
-        {/* Opción de Contactar soporte */}
-        <View style={styles.section}>
-          <View style={styles.card}>
-            <Animated.View style={{ transform: [{ scale: 1 }] }}>
-              <StyledPressable
-                style={styles.cardItem}
-                onPressIn={() => handlePressIn(1)}
-                onPressOut={() => handlePressOut(1)}
-                onPress={() => router.push('/contact-support')}
-              >
-                <View style={styles.cardItemContent}>
-                  <HelpCircle size={24} color="white" />
-                  <Text style={[styles.cardItemText, { fontFamily: 'Poppins_400Regular' }]}>Contactar soporte</Text>
-                  <ArrowRight size={24} color="white" />
-                </View>
-              </StyledPressable>
-            </Animated.View>
-          </View>
-        </View>
+  
 
       </View>
     </LinearGradient>

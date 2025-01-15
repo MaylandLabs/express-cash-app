@@ -113,6 +113,7 @@ const Profile = () => {
                 style={styles.cardItem}
                 onPressIn={() => handlePressIn(supportAnimatedScale)}
                 onPressOut={() => handlePressOut(supportAnimatedScale)}
+                onPress={() => router.push('/suport')}
               >
                 <View style={styles.cardItemContent}>
                   <HelpCircle size={24} color="white" />
@@ -148,7 +149,7 @@ const Profile = () => {
               style={styles.cardItem}
               onPressIn={() => handlePressIn(settingsAnimatedScale)}
               onPressOut={() => handlePressOut(settingsAnimatedScale)}
-              onPress={() => router.push('/config')}  // Redirige a la ruta "/"
+              onPress={() => router.push('/config')}
             >
               <View style={styles.cardItemContent}>
                 <Settings size={24} color="white" />
