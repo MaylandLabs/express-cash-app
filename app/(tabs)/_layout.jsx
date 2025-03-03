@@ -35,7 +35,7 @@ const TabsLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="index"        
+        name="index"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
@@ -104,6 +104,7 @@ const TabsLayout = () => {
         name="loan"
         options={{
           headerShown: false,
+          tabBarStyle: { display: "none" },
           tabBarIcon: ({ focused }) => (
             <View
               style={{
