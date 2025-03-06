@@ -66,7 +66,7 @@ const Profile = () => {
         <View style={styles.profileSection}>
           <View style={styles.profileImageWrapper}>
             <Image
-              source={require("../../assets/favicon.png")}
+              source={images.logo}
               style={styles.profileImage}
               resizeMode="contain"
             />

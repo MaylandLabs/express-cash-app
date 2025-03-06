@@ -1,10 +1,11 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Signup() {
   const router = useRouter();
@@ -23,6 +24,8 @@ export default function Signup() {
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
+
+  const insets = useSafeAreaInsets();
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -45,11 +48,13 @@ export default function Signup() {
 
   return (
     <LinearGradient
-      colors={['#006B7A', '#004C5E']}
-      style={styles.gradient}
-      onLayout={onLayoutRootView}
-    >
-      <View style={styles.container}>
+    colors={['#006B7A', '#004C5E']}
+    style={[styles.gradient, { paddingTop: insets.top , paddingBottom: insets.bottom}]}
+    onLayout={onLayoutRootView}
+  >
+      <ScrollView className='flex-1' >
+        <View className='flex-1'>
+
         <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Registrarse</Text>
         <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
           Crea una cuenta personal para acceder a todos nuestros beneficios.
@@ -162,7 +167,8 @@ export default function Signup() {
           <Text style={[styles.backButtonText, { fontFamily: 'Poppins_400Regular' }]}>Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+      </ScrollView>
+      </LinearGradient>
   );
 }
 
