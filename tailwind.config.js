@@ -2,22 +2,19 @@
 
 module.exports = {
   darkMode: ["class"],
-  content: ["src/**/*.{html,js,jsx,ts,tsx}", "index.html"],
+  content: [
+    "./App.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
-        expresscash: {
-          yellow: "#FCD34D",
-          black: "#111827",
-          textos: "#575757",
-          skyBlue: "#8CC63F",
-          white: "#FFF",
-          gray: "#AAA",
-          gray2: "#C4C4C4",
-          gray3: "#F9F9F9",
-          red: "#ED1A00",
-          green: "#05B922",
-          blue: "#00A5E7",
+        ex: {
+          primary: "#055B72",
+          secondary: "#7AC92A",
+          heading: "#333333",
+          body: "#666666",
         },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -61,13 +58,10 @@ module.exports = {
         },
       },
       fontFamily: {
-        poppins: ['Poppins_400Regular', 'Poppins_600SemiBold', 'Poppins_700Bold', 'sans-serif'],
-        light: ["Gotham Light", "sans-serif"],
-        regular: ["Gotham Regular", "sans-serif"],
-        medium: ["Gotham Medium", "sans-serif"],
-        bold: ["Gotham Bold", "sans-serif"],
-        normal: ["Gotham Medium", "sans-serif"],
-        book: ["Gotham Book", "sans-serif"],
+        poppins_regular: ['Poppins_400Regular', 'sans-serif'],
+        poppins_semibold: ["Poppins_600SemiBold", "sans-serif"],
+        poppins_bold: ["Poppins_700Bold", "sans-serif"],
+        poppins_medium: ["Poppins_500Medium", "sans-serif"],
       },
       keyframes: {
         rotateClockwise: {

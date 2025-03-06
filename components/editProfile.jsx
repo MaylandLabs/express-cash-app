@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import * as ImagePicker from 'expo-image-picker';
+import { images } from "../theme";
 
 
 const StyledPressable = styled(Pressable);
@@ -17,7 +18,7 @@ const EditProfile = () => {
   const [email, setEmail] = useState("felixbilbao01@gmail.com");
   const [phone, setPhone] = useState("123-456-789");
   const [address, setAddress] = useState("Calle Ficticia 123");
-  const [image, setImage] = useState(require("../assets/favicon.png"));
+  const [image, setImage] = useState(images.logo);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
@@ -103,7 +104,7 @@ const EditProfile = () => {
                 source={image}
                 style={styles.profileImage}
                 resizeMode="cover"
-                defaultSource={require("../assets/favicon.png")}
+                defaultSource={images.logo}
               />
             </View>
             <StyledPressable

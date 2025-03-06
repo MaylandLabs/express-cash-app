@@ -1,26 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from '../../utils/auth';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FONTS, images } from '../../theme';
 import { useFonts } from 'expo-font';
-import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   const handleLogin = async () => {
     try {
       const success = await login(email, password);
@@ -33,37 +23,38 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={['#055B72', '#004D56']} >
+    <View className='flex justify-center items-center h-screen px-6'>
       <Image
-        source={require('../../assets/logo.png')} 
+        source={images.logo} 
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={[styles.welcomeText, { fontFamily: 'Poppins_600SemiBold' }]}>¡Bienvenido! 👋</Text>
-      <Text style={[styles.subText, { fontFamily: 'Poppins_400Regular' }]}>Crea una cuenta personal para acceder a todos nuestros beneficios.</Text>
+      <Text className="text-white text-3xl font-poppins-bold text-center" style={{fontFamily: FONTS.SEMIBOLD}}>¡Bienvenido! 👋</Text>
+      <Text className="text-white mt-4 text-sm font-poppins-regular text-center opacity-80">Crea una cuenta personal para acceder a todos nuestros beneficios.</Text>
 
-      <TouchableOpacity style={styles.googleButton}>
+      <TouchableOpacity className='mt-12' style={styles.googleButton}>
         <Image
-          source={require('../../assets/google-icon.png')}
+          source={images.google_logo}
           style={styles.googleIcon}
         />
-        <Text style={[styles.googleButtonText, { fontFamily: 'Poppins_400Regular' }]}>Iniciar sesión con Google</Text>
+        <Text style={styles.googleButtonText}>Iniciar sesión con Google</Text>
       </TouchableOpacity>
 
       <View style={styles.divider}>
         <View style={styles.dividerLine} />
-        <Text style={[styles.dividerText, { fontFamily: 'Poppins_400Regular' }]}>o</Text>
+        <Text style={styles.dividerText}>o</Text>
         <View style={styles.dividerLine} />
       </View>
 
       <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => router.push('/(auth)/login-form')}
+        className='bg-ex-secondary p-4 w-full justify-center items-center rounded-xl'
+        onPress={() => router.push('/(auth)/loginForm')}
       >
-        <Text style={[styles.loginButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Iniciar sesión</Text>
+        <Text className='text-ex-primary text-base' style={{fontFamily: FONTS.SEMIBOLD}}>Iniciar sesión</Text>
       </TouchableOpacity>
 
-      <View style={styles.registerContainer}>
+      <View className='flex flex-row items-center justify-center mt-20'>
         <Text style={[styles.registerText, { fontFamily: 'Poppins_400Regular' }]}>¿No tienes cuenta aún? </Text>
         <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
           <Text style={[styles.registerLink, { fontFamily: 'Poppins_600SemiBold' }]}>Regístrate</Text>
@@ -71,6 +62,7 @@ export default function Login() {
       </View>
       
     </View>
+    </LinearGradient>
   );
 }
 
@@ -150,11 +142,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     marginTop: 15,
-  },
-  loginButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   registerContainer: {
     flexDirection: 'row',
