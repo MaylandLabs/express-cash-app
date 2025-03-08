@@ -55,9 +55,9 @@ export default function Login() {
       </TouchableOpacity>
 
       <View className='flex flex-row items-center justify-center mt-20'>
-        <Text style={[styles.registerText, { fontFamily: 'Poppins_400Regular' }]}>¿No tienes cuenta aún? </Text>
+        <Text style={[styles.registerText]}>¿No tienes cuenta aún? </Text>
         <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-          <Text style={[styles.registerLink, { fontFamily: 'Poppins_600SemiBold' }]}>Regístrate</Text>
+          <Text style={[styles.registerLink]}>Regístrate</Text>
         </TouchableOpacity>
       </View>
       
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     color: '#ffff',
     fontSize: 16,
     fontWeight: '500',
+    fontFamily: 'Poppins_400Regular',
   },
   divider: {
     flexDirection: 'row',
@@ -151,9 +152,10 @@ const styles = StyleSheet.create({
   registerText: {
     color: '#FFFFFF',
     opacity: 0.8,
+    fontFamily: 'Poppins_400Regular',
   },
   registerLink: {
     color: '#7CBA47',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
   },
 });
