@@ -7,7 +7,10 @@ import { useRouter } from 'expo-router';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { images } from "../../theme/images";
+import { FONTS } from "../../theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 const StyledPressable = styled(Pressable);
 
 const Profile = () => {
@@ -21,11 +24,6 @@ const Profile = () => {
   const settingsAnimatedScale = React.useRef(new Animated.Value(1)).current;
   const logoutAnimatedScale = React.useRef(new Animated.Value(1)).current;
 
-
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
 
   const toggleSwitch = () => setIsPushEnabled((previousState) => !previousState);
 
@@ -47,21 +45,16 @@ const Profile = () => {
     }).start();
   };
 
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
+  const insets = useSafeAreaInsets();
 
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
+    <LinearGradient className="flex-1" colors={["#055B72", "#004C5E"]} style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <View style={styles.content}>
-        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Mi perfil</Text>
+        <View className="flex-row items-center justify-between mt-4">
+        <Ionicons name="arrow-back" size={24} color="white" onPress={() => router.back()} />
+        <Text className="text-white text-xl" style={{ fontFamily: FONTS.SEMIBOLD }}>Mi perfil</Text>
+        <View className="w-8"></View>
+        </View>
   
         <View style={styles.profileSection}>
           <View style={styles.profileImageWrapper}>
@@ -94,7 +87,7 @@ const Profile = () => {
             <Animated.View style={{ transform: [{ scale: loansAnimatedScale }] }}>
               <StyledPressable
                 style={styles.cardItem}
-                onPress={() => router.push('/MyLoans')}
+                onPress={() => router.push('/myLoans')}
                 onPressIn={() => handlePressIn(loansAnimatedScale)}
                 onPressOut={() => handlePressOut(loansAnimatedScale)}
               >
@@ -189,7 +182,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
   },
   header: {
     color: 'white',
@@ -253,7 +246,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
   },
   card: {
-    backgroundColor: '#006B7A',
+    backgroundColor: '#055B72',
     padding: 12,
     borderRadius: 16,
     marginBottom: 24,

@@ -15,27 +15,12 @@ const Soporte = () => {
     { id: '3', text: "Claro, estaré encantado de ayudarte. ¿Qué necesitas saber sobre tu cuenta?", isUser: false },
   ]);
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
-
   React.useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
     prepare();
   }, []);
-
-  const onLayoutRootView = React.useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const sendMessage = () => {
     if (message.trim()) {
@@ -52,7 +37,7 @@ const Soporte = () => {
   );
 
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
+    <LinearGradient colors={["#055B72", "#004C5E"]} style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color="white" />
@@ -118,7 +103,7 @@ const styles = StyleSheet.create({
   },
   supportMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#006B7A',
+    backgroundColor: '#055B72',
   },
   messageText: {
     color: 'white',
@@ -139,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sendButton: {
-    backgroundColor: '#006B7A',
+    backgroundColor: '#055B72',
     borderRadius: 25,
     width: 50,
     height: 50,

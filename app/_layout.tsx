@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loadFonts, loadImages } from '../theme/index';
 import { verifySessionAsync } from '../store/actions/auth';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { initializeTheme } from '../theme/index';
 
 const queryClient = new QueryClient();
 
@@ -81,7 +82,7 @@ const RootLayout = () => {
 
   const preloadAssets = async () => {
     try {
-      await Promise.all([loadFonts(), loadImages()]);
+      await initializeTheme();
     } finally {
       setAppReady(true);
     }
@@ -110,7 +111,7 @@ const RootLayout = () => {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(content)" options={{ headerShown: false }} />
       <Stack.Screen name="not_found" />
     </Stack>
   );

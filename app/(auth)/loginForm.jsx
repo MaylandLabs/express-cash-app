@@ -117,8 +117,9 @@ const LoginForm = () => {
   };
 
   return (
+
     <LinearGradient
-      colors={["#006B7A", "#004C5E"]}
+      colors={["#055B72", "#004C5E"]}
       style={styles.gradient}
     >
       <KeyboardAvoidingView 
