@@ -12,7 +12,8 @@ import {
 import { useRouter } from 'expo-router';
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from 'expo-font'; 
-import { Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import Toast from '../../components/Toast';
 
 export default function PasswordRecovery() {
   const [email, setEmail] = useState('');
@@ -21,12 +22,15 @@ export default function PasswordRecovery() {
   const [isNewPasswordStep, setIsNewPasswordStep] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
 
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
+    Poppins_700Bold
   });
 
   if (!fontsLoaded) {
@@ -58,28 +62,30 @@ export default function PasswordRecovery() {
       if (isValidEmail(email)) {
         sendVerificationCode();
       } else {
-        Alert.alert('Error', 'Por favor ingresa un email válido');
+        setToastMessage('Por favor ingresa un email válido');
+        setShowToast(true);
       }
     } else if (isVerificationStep && !isNewPasswordStep) {
       const fullCode = verificationCode.join('');
       if (fullCode === '12345') {
         setIsNewPasswordStep(true);
       } else {
-        Alert.alert('Error', 'Código incorrecto');
+        setToastMessage('Código de verificación incorrecto');
+        setShowToast(true);
       }
     } else {
       if (!isValidPassword(newPassword)) {
-        Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
+        setToastMessage('La contraseña debe tener al menos 6 caracteres');
+        setShowToast(true);
         return;
       }
       if (newPassword !== confirmPassword) {
-        Alert.alert('Error', 'Las contraseñas no coinciden');
+        setToastMessage('Las contraseñas no coinciden');
+        setShowToast(true);
         return;
       }
       
-      Alert.alert('Éxito', 'Contraseña actualizada correctamente', [
-        { text: 'OK', onPress: () => router.back() }
-      ]);
+      router.push('/(auth)/success');
     }
   };
 
@@ -114,7 +120,7 @@ export default function PasswordRecovery() {
 
   const renderVerificationCode = () => (
     <View style={styles.formContainer}>
-      <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Código Confirmación</Text>
+      <Text style={[styles.title]}>Código Confirmación</Text>
       <Text style={[styles.subtitle, { fontFamily: 'Poppins_400Regular' }]}>
         Ingresa el código que enviamos a su email para ingresar una contraseña nueva.
       </Text>
@@ -134,6 +140,7 @@ export default function PasswordRecovery() {
     </View>
   );
 
+  
   const renderNewPassword = () => (
     <View style={styles.formContainer}>
       <Text style={[styles.title, { fontFamily: 'Poppins_600SemiBold' }]}>Nueva Contraseña</Text>
@@ -168,7 +175,10 @@ export default function PasswordRecovery() {
       colors={['#006B7A', '#004C5E']}
       style={styles.gradient}
     >
-      <View style={styles.mainContainer}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.mainContainer}
+      >
         {isNewPasswordStep 
           ? renderNewPassword()
           : isVerificationStep 
@@ -176,15 +186,20 @@ export default function PasswordRecovery() {
             : renderEmailInput()
         }
 
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.buttonContainer}
-        >
+        <View style={styles.buttonContainer}>
+          <Toast
+            message={toastMessage} 
+            visible={showToast} 
+            onHide={() => setShowToast(false)} 
+          />
           <TouchableOpacity 
             style={styles.continueButton} 
             onPress={handleContinue}
           >
-            <Text style={[styles.continueButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Continuar</Text>
+            <Text style={[styles.continueButtonText]} 
+            disabled={isNewPasswordStep || isVerificationStep}
+            onPress={handleContinue}
+            >Continuar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -201,8 +216,8 @@ export default function PasswordRecovery() {
           >
             <Text style={[styles.backButtonText, { fontFamily: 'Poppins_600SemiBold' }]}>Volver</Text>
           </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
@@ -226,14 +241,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 10,
+    fontFamily: 'Poppins_600SemiBold',
   },
   subtitle: {
     fontSize: 16,
     color: '#FFFFFF',
     marginBottom: 30,
     opacity: 0.8,
+    fontFamily: 'Poppins_400Regular',
+    textAlign: 'center',
   },
   label: {
     fontSize: 16,
@@ -255,15 +273,15 @@ const styles = StyleSheet.create({
   continueButton: {
     backgroundColor: '#7CBA47',
     paddingVertical: 12,
-    borderRadius: 25,
+    borderRadius: 8,
     width: '100%',
     alignItems: 'center',
     marginBottom: 20,
   },
   continueButtonText: {
-    color: '#FFFFFF',
+    color: '#055B72',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
   },
   backButton: {
     alignItems: 'center',
@@ -281,10 +299,8 @@ const styles = StyleSheet.create({
   codeInput: {
     width: 50,
     height: 50,
-    borderWidth: 1,
+    borderBottomWidth: 2,
     borderColor: '#7CBA47',
-    borderRadius: 8,
-    backgroundColor: '#004D56',
     color: '#FFFFFF',
     fontSize: 24,
     textAlign: 'center',
