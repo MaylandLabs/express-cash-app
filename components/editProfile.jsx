@@ -8,9 +8,10 @@ import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-
 import * as SplashScreen from 'expo-splash-screen';
 import * as ImagePicker from 'expo-image-picker';
 import { images } from "../theme";
-
-
+import { FONTS } from "../theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const StyledPressable = styled(Pressable);
+
 
 const EditProfile = () => {
   const router = useRouter();
@@ -23,12 +24,6 @@ const EditProfile = () => {
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
   const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
-
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
-
   const handlePressIn = (animatedValue) => {
     Animated.spring(animatedValue, {
       toValue: 0.95,
@@ -47,11 +42,6 @@ const EditProfile = () => {
     }).start();
   };
 
-  const onLayoutRootView = async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  };
 
   const handleChangeImage = async () => {
     try {
@@ -78,25 +68,34 @@ const EditProfile = () => {
   };
 
   const handleSaveChanges = () => {
-    
     Alert.alert("Cambios guardados exitosamente.");
   };
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  const handleBack = () => {
+    router.back();
+  };
+
+  const insets = useSafeAreaInsets();
 
   return (
     <LinearGradient 
-      colors={["#006B7A", "#004C5E"]} 
-      style={styles.container} 
-      onLayout={onLayoutRootView}
+      colors={["#055B72", "#004C5E"]} 
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      className="flex-1"
+
     >
+
       <View style={styles.content}>
-        <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>
+      <View className="flex-row items-center justify-between mt-4">
+      <Ionicons name="arrow-back" size={24} color="white" onPress={() => router.back()} />
+
+        <Text className="text-white text-xl" style={{ fontFamily: FONTS.SEMIBOLD }}>
           Editar perfil
         </Text>  
+        <View className="w-8"></View>
+        </View>
         
+
         <View style={styles.profileSection}>
           <View style={styles.profileImageContainer}>
             <View style={styles.profileImageWrapper}>
@@ -159,17 +158,6 @@ const EditProfile = () => {
             >
               <Text style={[styles.actionButtonText, { fontFamily: 'Poppins_400Regular' }]}>
                 Cambiar contraseña
-              </Text>
-            </StyledPressable>
-
-            <StyledPressable
-              style={styles.actionButton}
-              onPressIn={() => handlePressIn(editProfileAnimatedScale)}
-              onPressOut={() => handlePressOut(editProfileAnimatedScale)}
-              onPress={() => setEmailModalVisible(true)}
-            >
-              <Text style={[styles.actionButtonText, { fontFamily: 'Poppins_400Regular' }]}>
-                Cambiar correo electrónico
               </Text>
             </StyledPressable>
 

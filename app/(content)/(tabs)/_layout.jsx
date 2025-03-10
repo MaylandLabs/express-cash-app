@@ -1,20 +1,27 @@
-import { Tabs } from "expo-router";
-import { View } from "react-native";
+import { Tabs, useRouter } from "expo-router";
+import { View, Pressable } from "react-native";
 import { Home, Bell, Menu, Plus } from "lucide-react-native";
+import { BlurView } from 'expo-blur';
+import TabBarIcon from '../../../components/TabBarIcon';
 
 const TabsLayout = () => {
+  const router = useRouter();
   return (
     <Tabs
       screenOptions={{
         headerTransparent: true,
+        tabBarBackground: () => (
+          <BlurView
+            intensity={20}
+            tint="dark"
+            className="absolute inset-0 rounded-[40px]"
+          />
+        ),
         tabBarStyle: {
-          backgroundColor: "#3E999F",
+          backgroundColor: 'rgba(62, 153, 159, 0.7)',
           position: "absolute",
-          bottom: 30,
-          width: 380,
-          left: 20,
-          right: 40,
-          marginHorizontal: 20,
+          bottom: 35,
+          marginHorizontal: 15,
           borderRadius: 40,
           height: 80,
           paddingBottom: 0,
@@ -26,11 +33,11 @@ const TabsLayout = () => {
           },
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
-          elevation: 5,
+          elevation: 52,
         },
         tabBarShowLabel: false,
         tabBarItemStyle: {
-          padding: 4,
+          height: 80,
         },
       }}
     >
@@ -39,19 +46,7 @@ const TabsLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                marginTop: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Home
-                size={34}
-                color={focused ? "#79C72B" : "white"}
-                strokeWidth={2}
-              />
-            </View>
+            <TabBarIcon Icon={Home} focused={focused} />
           ),
         }}
       />
@@ -61,41 +56,17 @@ const TabsLayout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                marginTop: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Bell
-                size={34}
-                color={focused ? "#79C72B" : "white"}
-                strokeWidth={2}
-              />
-            </View>
+            <TabBarIcon Icon={Bell} focused={focused} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="profile"
+        name="myLoans"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                marginTop: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Menu
-                size={34}
-                color={focused ? "#79C72B" : "white"}
-                strokeWidth={2}
-              />
-            </View>
+            <TabBarIcon Icon={Menu} focused={focused} />
           ),
         }}
       />
@@ -106,15 +77,12 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarStyle: { display: "none" },
           tabBarIcon: ({ focused }) => (
+            <Pressable
+              onPress={() => router.push("/loan")}
+            >
             <View
+              className="bg-[#79C72B] w-[66px] h-[66px] mt-10 rounded-full justify-center items-center"
               style={{
-                backgroundColor: "#79C72B",
-                width: 66,
-                height: 66,
-                marginTop: 30,
-                borderRadius: 43,
-                justifyContent: "center",
-                alignItems: "center",
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
@@ -127,6 +95,7 @@ const TabsLayout = () => {
             >
               <Plus size={24} color="white" strokeWidth={2} />
             </View>
+            </Pressable>
           ),
         }}
       />

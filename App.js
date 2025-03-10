@@ -9,7 +9,7 @@ import * as Font from 'expo-font';
 
 import Login from './app/(auth)/login';
 import Signup from './app/(auth)/signup';
-import TabsLayout from './app/(tabs)/_layout';
+import TabsLayout from './app/(content)/(tabs)/_layout';
 
 const Stack = createStackNavigator();
 
@@ -71,7 +71,7 @@ export default function App() {
   if (!isReady || !poppinsLoaded) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <ActivityIndicator size="large" color="#006B7A" />
+        <ActivityIndicator size="large" color="#055B72" />
         <Text style={{ marginTop: 20, textAlign: 'center' }}>
           Loading status: isReady={isReady ? "true" : "false"}, poppinsLoaded={poppinsLoaded ? "true" : "false"}
         </Text>

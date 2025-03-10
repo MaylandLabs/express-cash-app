@@ -14,11 +14,6 @@ const Config = () => {
   const router = useRouter();
   const [hasLoanActive, setHasLoanActive] = React.useState(true); // Simulando si tiene un préstamo activo.
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
-
   const handlePressIn = (animatedValue) => {
     Animated.spring(animatedValue, {
       toValue: 0.95,
@@ -37,18 +32,8 @@ const Config = () => {
     }).start();
   };
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
-    <LinearGradient colors={["#006B7A", "#004C5E"]} style={styles.container} onLayout={onLayoutRootView}>
+    <LinearGradient colors={["#055B72", "#004C5E"]} style={styles.container}>
       <View style={styles.content}>
         <Text style={[styles.header, { fontFamily: 'Poppins_600SemiBold' }]}>Configuraciones</Text>
 
@@ -189,7 +174,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   card: {
-    backgroundColor: '#006B7A',
+    backgroundColor: '#055B72',
     borderRadius: 10,
     overflow: 'hidden',
   },

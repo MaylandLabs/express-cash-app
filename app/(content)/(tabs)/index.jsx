@@ -1,4 +1,4 @@
-import HomeView from "../../components/HomeView";
+import HomeView from "../../../components/HomeView";
 
 export default function Index() {
 

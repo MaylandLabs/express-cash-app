@@ -4,49 +4,39 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { FONTS } from '../../../theme';
 const notifications = [
   { id: '1', title: '¡Préstamo pre-aprobado!', subtitle: 'Un asesor se comunicará contigo', date: '1 día', emoji: '😊' },
   { id: '2', title: '¡Préstamo pre-aprobado!', subtitle: 'Un asesor se comunicará contigo', date: '1 día', emoji: '😊' },
   { id: '3', title: '¡Préstamo pre-aprobado!', subtitle: 'Un asesor se comunicará contigo', date: '1 día', emoji: '😊' },
   { id: '4', title: '¡Préstamo pre-aprobado!', subtitle: 'Un asesor se comunicará contigo', date: '1 día', emoji: '😊' },
 ];
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScrollViewTopMask from '../../../components/ScrollViewTopMask';
 
 const Notifications = () => {
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
+  const insets = useSafeAreaInsets();
 
   return (
     <LinearGradient
-      colors={['#006B7A', '#004C5E']}
-      style={style.container}
-      onLayout={onLayoutRootView}
+      colors={['#055B72', '#004C5E']}
+      style={[style.container, { paddingTop: insets.top }]}
     >
-      <View style={style.content}>
-        <View style={style.header}>
-          <Text style={[style.headerText, { fontFamily: 'Poppins_600SemiBold' }]}>
+      <View className="flex-1 px-4">
+        <View className="mt-4">
+          <Text style={[style.headerText, { fontFamily: FONTS.SEMIBOLD }]}>
             Notificaciones
           </Text>
         </View>
-        <FlatList
-          data={notifications}
-          keyExtractor={(item) => item.id}
+        <ScrollViewTopMask>
+          <FlatList
+            className="pt-8"
+            data={notifications}
+            keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={style.notificationCard}>
-              <Text style={style.emoji}>{item.emoji}</Text>
-              <View style={style.notificationContent}>
+            <View className="bg-ex-primary rounded-2xl px-5 py-4 mt-4 flex-row items-center">
+              <Text className="text-2xl text-white">{item.emoji}</Text>
+              <View className="ml-4">
                 <Text style={[style.notificationTitle, { fontFamily: 'Poppins_600SemiBold' }]}>
                   {item.title}
                 </Text>
@@ -59,7 +49,8 @@ const Notifications = () => {
               </View>
             </View>
           )}
-        />
+          />
+        </ScrollViewTopMask>
       </View>
     </LinearGradient>
   );
@@ -71,7 +62,6 @@ const style = {
   },
   content: {
     flex: 1,
-    paddingTop: 32,
     paddingHorizontal: 24,
   },
   header: {
