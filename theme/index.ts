@@ -19,8 +19,6 @@ export const initializeTheme = async () => {
       loadFonts(),
       loadImages()
     ]);
-    
-    console.log('Theme initialized:', { fontsLoaded, imagesLoaded });
     return true;
   } catch (error) {
     console.error('Theme initialization failed:', error);

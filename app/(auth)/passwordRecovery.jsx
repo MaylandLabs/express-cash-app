@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from 'expo-font'; 
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import Toast from '../../components/Toast';
+import RenderVerificationCode from './codeSecurity';
 
 export default function PasswordRecovery() {
   const [email, setEmail] = useState('');
@@ -86,15 +87,6 @@ export default function PasswordRecovery() {
       }
       
       router.push('/(auth)/success');
-    }
-  };
-
-  const handleCodeChange = (text, index) => {
-    const newCode = [...verificationCode];
-    newCode[index] = text;
-    setVerificationCode(newCode);
-
-    if (text.length === 1 && index < 4) {
     }
   };
 
@@ -182,7 +174,10 @@ export default function PasswordRecovery() {
         {isNewPasswordStep 
           ? renderNewPassword()
           : isVerificationStep 
-            ? renderVerificationCode()
+            ? <RenderVerificationCode 
+                verificationCode={verificationCode}
+                setVerificationCode={setVerificationCode}
+              />
             : renderEmailInput()
         }
 

@@ -73,6 +73,12 @@ export const registerInAsync = createAsyncThunk(
       data: {
         email: string;
         password: string;
+        first_name: string;
+        last_name: string;
+        cuil: string;
+        phone: string;
+        birthday: string;
+        zipcode: string;
       };
       tokenNotifications: string;
       setActive: (boolean: boolean) => void;
@@ -83,6 +89,7 @@ export const registerInAsync = createAsyncThunk(
   ) => {
     setActive(true);
     try {
+      console.log(data)
       const response = await axios.post(apiUrls.signUp(), { ...data, tokenNotifications });
       if (response.data.ok) {
         await setItem(tokenAccess.tokenName, response.data.token);
@@ -90,7 +97,7 @@ export const registerInAsync = createAsyncThunk(
         setupAxiosInterceptors(dispatch);
         setActive(false);
         dispatch(getUserAsync());
-        return {};
+        return response.data;
       } else {
         setActive(false);
         setError(response.data.message);
@@ -104,6 +111,30 @@ export const registerInAsync = createAsyncThunk(
     }
   },
 );
+
+export const verifyCodeAsync = createAsyncThunk(
+  'auth/verifyCodeAsync',
+  async (
+    { code }: { code: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = await getItem(tokenAccess.tokenName);
+      if (!token) {
+        return rejectWithValue("No se encontró el token de autenticación");
+      }
+      const response = await axiosInstance.post(apiUrls.verifyCode(), { code });
+      if (response.data.ok) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error al verificar el código');
+    }
+  }
+);
+
 
 export const setPassword = createAsyncThunk(
   'auth/setPassword',
@@ -317,7 +348,6 @@ export const forgetPassword = createAsyncThunk(
     } catch (error: any) {
       setActive(false);
       const message = error.response?.data?.message || 'Email no encontrado';
-      console.log('Error completo:', error);
       setError(message);
       return rejectWithValue('error');
     }
@@ -481,6 +511,8 @@ export const getUserAsync = createAsyncThunk(
   'auth/getUserAsync',
   async (_, { rejectWithValue }) => {
     try {
+      const token = await getItem(tokenAccess.tokenName);
+
       const response = await axiosInstance.get(apiUrls.getUser());
 
       if (response.data.ok) {

@@ -11,10 +11,14 @@ import { images } from "../../theme/images";
 import { FONTS } from "../../theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useAppDispatch } from "../../store";
+import { logOutAsync } from "../../store/actions/auth";
+
 const StyledPressable = styled(Pressable);
 
 const Profile = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [isPushEnabled, setIsPushEnabled] = React.useState(false);
 
 
@@ -43,6 +47,11 @@ const Profile = () => {
       speed: 20,
       bounciness: 4
     }).start();
+  };
+
+  const handleLogout = () => {
+    dispatch(logOutAsync());
+    router.push('/(auth)/');
   };
 
   const insets = useSafeAreaInsets();
@@ -158,7 +167,7 @@ const Profile = () => {
             <Animated.View style={{ transform: [{ scale: logoutAnimatedScale }] }}>
               <StyledPressable
                 style={styles.cardItem}
-                onPress={() => router.push('/(auth)/')}
+                onPress={() => handleLogout()}
                 onPressIn={() => handlePressIn(logoutAnimatedScale)}
                 onPressOut={() => handlePressOut(logoutAnimatedScale)}
               >
