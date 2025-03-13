@@ -16,7 +16,7 @@ export default function Success() {
   const insets = useSafeAreaInsets();
   return (
     <LinearGradient
-      colors={["#004D56", "#004D56"]}
+      colors={["#055B72", "#004C5E"]}
       style={[
         styles.container,
         { paddingTop: insets.top, paddingBottom: insets.bottom },
@@ -37,7 +37,7 @@ export default function Success() {
       <TouchableOpacity style={styles.continueButton}>
         <Text
           style={styles.continueButtonText}
-          onPress={() => router.replace("/(tabs)/")}
+          onPress={() => router.replace("/(content)/index")}
         >
           Ir a la app
         </Text>

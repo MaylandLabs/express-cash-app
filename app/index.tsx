@@ -11,7 +11,7 @@ const Index = () => {
   }
 
   if (isAuth && user !== null && user?.email_verified === false) {
-    return <Redirect href="/(auth)/email_verify" />;
+    return <Redirect href="/(auth)/" />;
   }
 
   if (

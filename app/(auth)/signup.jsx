@@ -1,32 +1,28 @@
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Pressable, Image,} from "react-native";
 import { useRouter } from "expo-router";
 import { useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  useFonts,
-  Poppins_400Regular,
-  Poppins_600SemiBold,
-} from "@expo-google-fonts/poppins";
 import * as SplashScreen from "expo-splash-screen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Toast from '../../components/Toast';
+import Toast from "../../components/Toast";
+import { FONTS } from '../../theme';
+import google_icon from "../../assets/images/google_icon.png";
+import { registerInAsync } from "../../store/actions/auth";
+import { useAppDispatch } from "../../store";
 
 export default function Signup() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const [formData, setFormData] = useState({
+    name: "",
+    lastName: "",
     email: "",
     cuil: "",
-    telefono: "",
+    phone: "",
+    birthDate: "",
+    zipcode: "",
     password: "",
     confirmPassword: "",
   });
@@ -34,13 +30,10 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [backButton, setbackButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-  });
+  const [fontsLoaded] = useState(true);
 
   const insets = useSafeAreaInsets();
 
@@ -50,108 +43,168 @@ export default function Signup() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null; // Esperamos a que las fuentes se carguen
-  }
-
   const validateForm = () => {
-    if (!formData.email || !formData.cuil || !formData.telefono || !formData.password || !formData.confirmPassword) {
+    if (
+      !formData.email ||
+      !formData.cuil ||
+      !formData.telefono ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setToastMessage("Todos los campos son obligatorios");
       setShowToast(true);
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setToastMessage("Por favor ingresa un email válido");
       setShowToast(true);
       return false;
     }
-
-    const cuilRegex = /^\d{2}\.\d{3}\.\d{3}$/;
-    if (!cuilRegex.test(formData.cuil)) {
-      setToastMessage("El CUIL/CUIT debe tener el formato XX.XXX.XXX");
+    const cuilRegex = /^(\d{2}[-\s.]?\d{3}[-\s.]?\d{3})$/;
+    if (!cuilRegex.test(formData.cuil.replace(/[-.\s]/g, ''))) {
+      setToastMessage("El CUIL/CUIT debe tener 8 dígitos");
       setShowToast(true);
       return false;
     }
-
-    const phoneRegex = /^\+54\s\d{3}-\d{8}$/;
-    if (!phoneRegex.test(formData.telefono)) {
-      setToastMessage("El teléfono debe tener el formato +54 XXX-XXXXXXXX");
+    const phoneRegex = /^(?:\+?54\s?)?(?:[-\s]?\d){10,}$/;
+    const cleanPhone = formData.telefono.replace(/[-+\s]/g, '');
+    if (!phoneRegex.test(formData.telefono) || cleanPhone.length < 10) {
+      setToastMessage("El teléfono debe tener al menos 10 dígitos");
       setShowToast(true);
       return false;
     }
-
     if (formData.password.length < 8) {
       setToastMessage("La contraseña debe tener al menos 8 caracteres");
       setShowToast(true);
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setToastMessage("Las contraseñas no coinciden");
       setShowToast(true);
       return false;
     }
-
     return true;
   };
 
   const handleSignup = async () => {
-    try {
-      if (!validateForm()) return;
-      
-      setIsLoading(true);
-      // Simular llamada a la API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      router.replace("/(auth)/success");
-    } catch (error) {
-      console.error(error);
-      setToastMessage("Ocurrió un error al registrarse");
-      setShowToast(true);
-    } finally {
-      setIsLoading(false);
-    }
+    if (!validateForm()) return;
+  
+    setIsLoading(true);
+  
+    dispatch(
+      registerInAsync({
+        data: {
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.name,
+          last_name: formData.lastName,
+          cuil: formData.cuil,
+          phone: formData.telefono,
+          birthday: formData.birthDate,
+          zipcode: formData.zipcode,
+        },
+        tokenNotifications: "TOKEN_DE_NOTIFICACIONES",
+        setActive: setIsLoading,
+        setError: setToastMessage,
+        dispatch,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        console.log("Registro exitoso");
+        router.push("/(auth)/codeSecurity");
+      })
+      .catch(() => {
+        setShowToast(true);
+      });
   };
+
   return (
     <LinearGradient
       colors={["#055B72", "#004C5E"]}
-      style={[
-        styles.gradient,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
-      ]}
+      className="flex-1"
+      style={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+      }}
       onLayout={onLayoutRootView}
     >
       {isLoading && (
-        <View style={styles.loaderContainer}>
+        <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center bg-black/50 z-[999]">
           <ActivityIndicator size="large" color="#7CBA47" />
         </View>
       )}
-      
+
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        pointerEvents={isLoading ? "none" : "auto"}
+         contentContainerStyle={styles.scrollContent}
+         showsVerticalScrollIndicator={false}
+         pointerEvents={isLoading ? "none" : "auto"}
       >
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <Text style={[styles.title, { fontFamily: "Poppins_600SemiBold" }]}>
+        <View className="flex-1 p-5">
+          <View className="mb-5 mt-10">
+            <Text 
+              className="text-white text-2xl text-center mb-2"
+              style={{ fontFamily: FONTS.SEMIBOLD }}
+            >
               Registrarse
             </Text>
-            <Text
-              style={[styles.subtitle, { fontFamily: "Poppins_400Regular" }]}
+            <Text 
+              className="text-white text-sm text-center"
+              style={{ fontFamily: FONTS.REGULAR }}
             >
               Crea una cuenta personal para acceder a todos nuestros beneficios.
             </Text>
+            <Pressable className="border-[#7CBA47] border-2  bg-transparent mt-4 font-poppins_regular p-4 rounded-[10px] items-center flex-row justify-center">
+              <Image source={google_icon} className="w-6 h-6 mr-2" />
+              <Text className="text-[#F5F5F5]">Registrarse con Google</Text>
+            </Pressable>
+            <View className="flex-row items-center w-full mt-8">
+              <View className="flex-1 h-[3px] bg-[#79C72B] opacity-50" />
+              <Text className="text-[#79C72B] opacity-80 px-2">o</Text>
+              <View className="flex-1 h-[3px] bg-[#79C72B] opacity-50" />
+            </View>
           </View>
 
           <View>
-            <Text style={[styles.label]}>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
+              Nombre
+            </Text>
+            <View className="relative mb-6">
+              <TextInput 
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
+                placeholder="Juan"
+                placeholderTextColor="#A9A9A9"
+                value={formData.name}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, name: text })
+                }
+              />
+            </View>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
+              Apellido
+            </Text>
+            <View className="relative mb-6">
+              <TextInput 
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
+                placeholder="Martinez"
+                placeholderTextColor="#A9A9A9"
+                value={formData.lastName}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, lastName: text })
+                }
+              />
+            </View>
+
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
               Email
             </Text>
-            <View style={styles.inputContainer}>
+            <View className="relative mb-6">
               <TextInput
-                style={styles.input}
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="dibu.martinez@gmail.com"
                 placeholderTextColor="#A9A9A9"
                 value={formData.email}
@@ -162,14 +215,13 @@ export default function Signup() {
                 autoCapitalize="none"
               />
             </View>
-
-            {/* Campo CUIL/CUIT */}
-            <Text style={[styles.label]}>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
               CUIL/CUIT
             </Text>
-            <View style={styles.inputContainer}>
+            <View className="relative mb-6">
               <TextInput
-                style={styles.input}
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="12.345.678"
                 placeholderTextColor="#A9A9A9"
                 value={formData.cuil}
@@ -180,13 +232,28 @@ export default function Signup() {
               />
             </View>
 
-            {/* Campo Teléfono */}
-            <Text style={[styles.label]}>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
+              Fecha de nacimiento
+            </Text>
+            <View className="relative mb-6">
+              <TextInput 
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
+                placeholder="12/01/1990"
+                placeholderTextColor="#A9A9A9"
+                value={formData.birthDate}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, birthDate: text })
+                }
+              />
+            </View>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
               Teléfono
             </Text>
-            <View style={styles.inputContainer}>
+            <View className="relative mb-6">
               <TextInput
-                style={styles.input}
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="+54 011-12345678"
                 placeholderTextColor="#A9A9A9"
                 value={formData.telefono}
@@ -196,14 +263,28 @@ export default function Signup() {
                 keyboardType="phone-pad"
               />
             </View>
-
-            {/* Campo Contraseña */}
-            <Text style={[styles.label]}>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
+              Código Postal
+            </Text>
+            <View className="relative mb-6">
+              <TextInput
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
+                placeholder="4001"
+                placeholderTextColor="#A9A9A9"
+                value={formData.zipcode}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, zipcode: text })
+                }
+              />
+            </View>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
               Contraseña
             </Text>
-            <View style={styles.inputContainer}>
+            <View className="relative mb-6">
               <TextInput
-                style={styles.input}
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="••••••••••"
                 placeholderTextColor="#A9A9A9"
                 value={formData.password}
@@ -213,7 +294,7 @@ export default function Signup() {
                 secureTextEntry={!showPassword}
               />
               <TouchableOpacity
-                style={styles.eyeIcon}
+                className="absolute top-4 right-4"
                 onPress={() => setShowPassword(!showPassword)}
               >
                 <Ionicons
@@ -223,14 +304,13 @@ export default function Signup() {
                 />
               </TouchableOpacity>
             </View>
-
-            {/* Campo Repetir Contraseña */}
-            <Text style={[styles.label]}>
+            <Text className="text-[#7CBA47] text-sm font-poppins_semibold mb-2">
               Repetir Contraseña
             </Text>
-            <View style={styles.inputContainer}>
+            <View className="relative mb-6">
               <TextInput
-                style={styles.input}
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="••••••••••"
                 placeholderTextColor="#A9A9A9"
                 value={formData.confirmPassword}
@@ -240,7 +320,7 @@ export default function Signup() {
                 secureTextEntry={!showConfirmPassword}
               />
               <TouchableOpacity
-                style={styles.eyeIcon}
+                className="absolute top-4 right-4"
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 <Ionicons
@@ -254,132 +334,46 @@ export default function Signup() {
         </View>
       </ScrollView>
 
-      <Toast
-        message={toastMessage} 
-        visible={showToast} 
-        onHide={() => setShowToast(false)} 
-      />
+      <View className="h-fit mx-5">
+        <Toast
+          message={toastMessage}
+          visible={showToast}
+          onHide={() => setShowToast(false)}
+        />
+      </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.registerButton} onPress={handleSignup}>
-          <Text
-            style={[
-              styles.registerButtonText,
-              { fontFamily: "Poppins_600SemiBold" },
-            ]}
-          >
+      <View className="p-5">
+        <TouchableOpacity
+          className="bg-[#7CBA47] p-4 rounded-[10px] items-center mb-5"
+          onPress={handleSignup}
+        >
+          <Text className="text-white text-sm font-poppins_semibold">
             Registrarse
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.backButton}
+          className="items-center"
           onPress={() =>
             router.push({
-              pathname: "/(auth)/login-form",
+              pathname: "/",
               params: { transition: "fade" },
             })
           }
         >
-          <Text
-            style={[
-              styles.backButtonText,
-              { fontFamily: "Poppins_400Regular" },
-            ]}
-          >
-            Iniciar sesión
+          <Text className="text-[#7CBA47] text-sm font-poppins_semibold">
+            Volver
           </Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
   );
 }
-
 const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    marginBottom: 30,
-    marginTop:40,
-  },
-  title: {
-    fontSize: 26,
-    color: "#FFFFFF",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#FFFFFF",
-    opacity: 0.8,
-    textAlign: "center",
-  },
-  label: {
-    color: "#7CBA47",
-    fontSize: 14,
-    fontFamily: "Poppins_600SemiBold",
-  },
-  inputContainer: {
-    position: "relative",
-    marginBottom: 25,
-  },
-  input: {
-    backgroundColor: "#004D56",
-    borderRadius: 10,
-    padding: 16,
-    color: "#FFFFFF",
-    fontSize: 15,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#7CBA47",
-    height: 60,
-  },
-  eyeIcon: {
-    position: "absolute",
-    right: 15,
-    top: 17,
-  },
-  buttonContainer: {
-    padding: 20,
-  },
-  registerButton: {
-    backgroundColor: "#7CBA47",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  registerButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  backButton: {
-    alignItems: "center",
-  },
-  backButtonText: {
-    color: "#7CBA47",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  loaderContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 999,
   },
 });
