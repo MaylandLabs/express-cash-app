@@ -3,13 +3,15 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppDispatch } from "../../store";
-import { verifyCodeAsync } from "../../store/actions/auth";
+import { verifyCodeAsync,forgetPasswordCode  } from "../../store/actions/auth";
+import { getItem } from "../../utils/storage";
+import { tokenAccess } from "../../store/api";
 
-export default function CodeSecurityScreen() {
+export default function CodeSecurityScreen({onContinue}) {
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", ""]);
-  const [isLoading, setIsLoading] = useState(false); // Asegúrate de que esté inicializado correctamente
-  const [errorMessage, setErrorMessage] = useState(""); // Asegúrate de que esté inicializado
-  const [showToast, setShowToast] = useState(false); // Asegúrate de que esté inicializado
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
   const router = useRouter();
   const inputsRef = useRef([]);
   const dispatch = useAppDispatch();
@@ -26,29 +28,47 @@ export default function CodeSecurityScreen() {
   };
 
   const handleVerifyCode = async () => {
-    console.log("verificar codigo")
     const code = verificationCode.join("");
-    console.log("codigo ingresado", code)
-    console.log("tipo de dato", typeof code)
+
     if (code.length === 5) {
-      console.log("tiene 5 digitos")
       setIsLoading(true);
       setErrorMessage("");
       setShowToast(false);
-      
-      try {
-        console.log("llamando a la api")
-        const result = await dispatch(verifyCodeAsync({ code })).unwrap();
-        console.log("result", result)
 
-        if (result.ok) {
-          router.push("/(auth)/success");
+      try {
+        if (onContinue === "passwordRecovery") {
+          dispatch(forgetPasswordCode({ 
+            code,
+            token: await getItem(tokenAccess.tokenName),
+            setError: (error) => {
+              setErrorMessage(error);
+              setShowToast(true);
+            },
+            setIsSubmitting: setIsLoading,
+            routerNext: () => router.push("/(auth)/reset-password")
+          }))
+          .unwrap()
+          .then(() => {
+            console.log("Código verificado exitosamente");
+            router.push("/(auth)/reset-password");
+          })
+          .catch((error) => {
+            console.log("error", error);
+            setErrorMessage("Error al verificar el código");
+            setShowToast(true);
+          });
         } else {
-          setErrorMessage(result.message || "Código inválido");
-          setShowToast(true);
+          let result = await dispatch(verifyCodeAsync({ code })).unwrap();
+          console.log("result", result)
+
+          if (result.ok) {
+            router.push("/(auth)/success");
+          } else {
+            setErrorMessage(result.message || "Código inválido");
+            setShowToast(true);
+          }
         }
       } catch (error) {
-        console.log(error)
         setErrorMessage(error.message || "Error al verificar el código");
         setShowToast(true);
       } finally {

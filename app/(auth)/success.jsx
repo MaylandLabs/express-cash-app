@@ -37,7 +37,7 @@ export default function Success() {
       <TouchableOpacity style={styles.continueButton}>
         <Text
           style={styles.continueButtonText}
-          onPress={() => router.replace("/(content)/index")}
+          onPress={() => router.replace("/(content)/")}
         >
           Ir a la app
         </Text>
