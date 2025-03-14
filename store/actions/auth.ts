@@ -249,9 +249,11 @@ export const logInAsync = createAsyncThunk(
     },
     { rejectWithValue },
   ) => {
+    console.log("data", data)
     setActive(true);
     try {
       const response = await axios.post(apiUrls.logIn(), { ...data, tokenNotifications });
+      console.log("response", response.data)
       if (response.data.ok) {
         await setItem(tokenAccess.tokenName, response.data.token);
         await setItem(tokenAccess.refreshTokenName, response.data.refreshToken);
@@ -269,8 +271,10 @@ export const logInAsync = createAsyncThunk(
         return rejectWithValue('error');
       }
     } catch (error: any) {
+      console.log("error", error)
       setActive(false);
       const message = error.response?.data?.message || 'Error al iniciar sesión';
+      console.log("message", message)
       setError(message);
       return rejectWithValue('error');
     }
@@ -548,6 +552,7 @@ export const forgetPasswordCode = createAsyncThunk(
         code,
         token,
       });
+      console.log("response", response.data)
       if (response.data.ok) {
         setIsSubmitting(false);
         routerNext();
