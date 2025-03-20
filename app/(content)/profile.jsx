@@ -1,32 +1,30 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Text, View, Image, Pressable, Switch, Animated, StyleSheet } from "react-native";
 import { styled } from "nativewind";
 import { LinearGradient } from "expo-linear-gradient";
 import { Wallet, HelpCircle, Bell, Settings, DoorClosed, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
-import { useCallback } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
+import {useEffect } from 'react';
 import { images } from "../../theme/images";
 import { FONTS } from "../../theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch } from "../../store";
-import { logOutAsync } from "../../store/actions/auth";
+import { getUserAsync, logOutAsync } from "../../store/actions/auth";
 
 const StyledPressable = styled(Pressable);
 
 const Profile = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [isPushEnabled, setIsPushEnabled] = React.useState(false);
+  const [isPushEnabled, setIsPushEnabled] = useState(false);
+  const [user, setUser] = useState(null);
 
-
-  const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
-  const loansAnimatedScale = React.useRef(new Animated.Value(1)).current;
-  const supportAnimatedScale = React.useRef(new Animated.Value(1)).current;
-  const settingsAnimatedScale = React.useRef(new Animated.Value(1)).current;
-  const logoutAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const editProfileAnimatedScale = useRef(new Animated.Value(1)).current;
+  const loansAnimatedScale = useRef(new Animated.Value(1)).current;
+  const supportAnimatedScale = useRef(new Animated.Value(1)).current;
+  const settingsAnimatedScale = useRef(new Animated.Value(1)).current;
+  const logoutAnimatedScale = useRef(new Animated.Value(1)).current;
 
 
   const toggleSwitch = () => setIsPushEnabled((previousState) => !previousState);
@@ -39,6 +37,15 @@ const Profile = () => {
       bounciness: 4
     }).start();
   };
+
+
+  useEffect(() => {
+    dispatch(getUserAsync()).then((response) => {
+      setUser(response.payload);
+    });
+  }, []);
+
+  console.log("user", user)
 
   const handlePressOut = (animatedValue) => {
     Animated.spring(animatedValue, {
@@ -73,8 +80,8 @@ const Profile = () => {
               resizeMode="contain"
             />
           </View>
-          <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>Félix Bilbao</Text>
-          <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>felixbilbao01@gmail.com</Text>
+          <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>{user ? user.user.first_name : "Félix Bilbao"}</Text>
+          <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>{user ? user.user.email : "felixbilbao01@gmail.com"}</Text>
 
           
           <Animated.View style={{ transform: [{ scale: editProfileAnimatedScale }] }}>
@@ -82,9 +89,9 @@ const Profile = () => {
               style={styles.editProfileButton}
               onPressIn={() => handlePressIn(editProfileAnimatedScale)}
               onPressOut={() => handlePressOut(editProfileAnimatedScale)}
-              onPress={() => router.push('/editProfile')} 
+              onPress={() => router.push('/editProfile')}
             >
-              <Text style={[styles.editProfileButtonText, { fontFamily: 'Poppins_400Regular' }]}>Editar perfil</Text>
+              <Text style={[styles.editProfileButtonText, { fontFamily: FONTS.MEDIUM }]}>Editar perfil</Text>
             </StyledPressable>
           </Animated.View>
         </View>
@@ -234,14 +241,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#79C72B',
     paddingVertical: 8,
     paddingHorizontal: 32,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   editProfileButtonText: {
-    color: 'white',
+    color: '#055B72',
     fontSize: 14,
-    fontWeight: '600',
     textAlign: 'center',
-    fontFamily: 'Poppins', 
   },
   section: {
     marginTop: 15,

@@ -4,14 +4,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ScrollView,
-  Dimensions,
-  Animated,
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,6 +25,7 @@ import Toast from "../../components/Toast";
 import { FONTS } from "../../theme";
 
 const LoginForm = () => {
+  const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -185,7 +182,7 @@ const LoginForm = () => {
   };
 
   return (
-    <LinearGradient colors={["#055B72", "#004C5E"]} className="flex-1">
+    <LinearGradient colors={["#055B72", "#004C5E"]} className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       {isLoading && (
         <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 justify-center items-center z-[999]">
           <ActivityIndicator size="large" color="#7CBA47" />
@@ -230,7 +227,7 @@ const LoginForm = () => {
                   Email
                 </Text>
                 <TextInput
-                  className={`bg-[#004D56] rounded-[10px] p-4 text-white text-sm w-full border-2 border-[#7CBA47] mb-5 ${
+                  className={`bg-[#004D56] rounded-[10px] p-4 text-white text-sm w-full border-2 h-[60px] border-[#7CBA47] mb-5 ${
                     touched.email && errors.email ? "border-[#FF3B30]" : ""
                   }`}
                   style={{ fontFamily: FONTS.REGULAR }}
@@ -248,35 +245,31 @@ const LoginForm = () => {
                 >
                   Contraseña
                 </Text>
-                <View
-                  className={`flex-row items-center bg-[#004D56] rounded-[10px] border-2 border-[#7CBA47] mb-5 ${
-                    touched.password && errors.password
-                      ? "border-[#FF3B30]"
-                      : ""
-                  }`}
-                >
-                  <TextInput
-                    className="flex-1 p-4 text-sm text-white"
-                    style={{ fontFamily: FONTS.REGULAR }}
-                    placeholder="••••••••••"
-                    placeholderTextColor="#A9A9A9"
-                    value={formData.password}
-                    onChangeText={(text) => handleChange("password", text)}
-                    onBlur={() => handleBlur("password")}
-                    secureTextEntry={!showPassword}
-                  />
-                  <TouchableOpacity
-                    className="p-2"
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Ionicons
-                      name={showPassword ? "eye-outline" : "eye-off-outline"}
-                      size={24}
-                      color="#7CBA47"
-                    />
-                  </TouchableOpacity>
-                </View>
-
+                <View className="relative mb-6">
+              <TextInput
+                className={`bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px] ${
+                  touched.password && errors.password ? "border-[#FF3B30]" : ""
+                }`}
+                style={{ fontFamily: FONTS.REGULAR }}
+                placeholder="••••••••••"
+                placeholderTextColor="#A9A9A9"
+                value={formData.password}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, password: text })
+                }
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                className="absolute top-4 right-4"
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
+                  size={24}
+                  color="#7CBA47"
+                />
+              </TouchableOpacity>
+            </View>
                 <TouchableOpacity
                   onPress={() => router.push("/(auth)/passwordRecovery")}
                   className="items-center mb-5"
@@ -300,7 +293,7 @@ const LoginForm = () => {
                 />
               </View>
               <TouchableOpacity
-                className={`w-full bg-[#7CBA47] rounded-[10px] p-4 items-center mb-5 ${
+                className={`w-full bg-[#79C72B] rounded-[10px] p-4 items-center mb-5 ${
                   isLoading ? "opacity-70" : ""
                 }`}
                 onPress={handleLogin}
@@ -323,8 +316,8 @@ const LoginForm = () => {
                 </Text>
                 <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
                   <Text
-                    className="text-[#00C853] text-sm ml-1"
-                    style={{ fontFamily: FONTS.REGULAR }}
+                    className="text-[#7CBA47] text-sm ml-1"
+                    style={{ fontFamily: FONTS.SEMIBOLD }}
                   >
                     Regístrate
                   </Text>

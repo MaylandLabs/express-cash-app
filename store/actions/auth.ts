@@ -1,4 +1,4 @@
-import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { decode as atob } from 'base-64';
 import { jwtDecode } from 'jwt-decode';
@@ -89,7 +89,6 @@ export const registerInAsync = createAsyncThunk(
   ) => {
     setActive(true);
     try {
-      console.log(data)
       const response = await axios.post(apiUrls.signUp(), { ...data, tokenNotifications });
       if (response.data.ok) {
         await setItem(tokenAccess.tokenName, response.data.token);
@@ -135,7 +134,6 @@ export const verifyCodeAsync = createAsyncThunk(
   }
 );
 
-
 export const setPassword = createAsyncThunk(
   'auth/setPassword',
   async (
@@ -146,7 +144,6 @@ export const setPassword = createAsyncThunk(
       dispatch,
     }: {
       data: {
-        token: string;
         code: string;
         password: string;
         confirmPassword: string;
@@ -159,10 +156,11 @@ export const setPassword = createAsyncThunk(
   ) => {
     setActive(true);
     try {
-      const response = await axios.post(apiUrls.setPassword(), { ...data });
+      const token = await getItem('forgetPasswordToken');
+      const response = await axios.post(apiUrls.setPassword(), { ...data, token });
       if (response.data.ok) {
         setActive(false);
-        return {};
+        return response.data;
       } else {
         setActive(false);
         setError(response.data.message);
@@ -249,11 +247,9 @@ export const logInAsync = createAsyncThunk(
     },
     { rejectWithValue },
   ) => {
-    console.log("data", data)
     setActive(true);
     try {
       const response = await axios.post(apiUrls.logIn(), { ...data, tokenNotifications });
-      console.log("response", response.data)
       if (response.data.ok) {
         await setItem(tokenAccess.tokenName, response.data.token);
         await setItem(tokenAccess.refreshTokenName, response.data.refreshToken);
@@ -342,6 +338,7 @@ export const forgetPassword = createAsyncThunk(
     try {
       const response = await axios.post(apiUrls.forgetPassword(), { email: data.email });
       if (response.data.ok) {
+        await setItem('forgetPasswordToken', response.data.token);
         setActive(false);
         return response.data.token;
       } else {
@@ -515,10 +512,7 @@ export const getUserAsync = createAsyncThunk(
   'auth/getUserAsync',
   async (_, { rejectWithValue }) => {
     try {
-      const token = await getItem(tokenAccess.tokenName);
-
       const response = await axiosInstance.get(apiUrls.getUser());
-
       if (response.data.ok) {
         return response.data;
       } else {
@@ -531,16 +525,60 @@ export const getUserAsync = createAsyncThunk(
   },
 );
 
+export const updateUserDataAsync = createAsyncThunk(
+  'auth/updateUserDataAsync',
+  async (
+    {
+      data,
+      setActive,
+      setError,
+      dispatch,
+    }: {
+      data: {
+        id: string;
+        email?: string;
+        first_name?: string;
+        last_name?: string;
+        cuil?: string;
+        phone?: string;
+        birthday?: string;
+        zipcode?: string;
+      };
+      setActive: (boolean: boolean) => void;
+      setError: (error: string) => void;
+      dispatch: ReturnType<typeof useAppDispatch>;
+    },
+    { rejectWithValue },
+  ) => {
+    setActive(true);
+    try {
+      const response = await axiosInstance.post(apiUrls.updateDataId(data.id), data);
+      if (response.data.ok) {
+        setActive(false);
+        dispatch(getUserAsync());
+        return response.data;
+      } else {
+        setActive(false);
+        setError(response.data.message);
+        return rejectWithValue('error');
+      }
+    } catch (error: any) {
+      setActive(false);
+      const message = error.response?.data?.message || 'Error al actualizar los datos del usuario';
+      setError(message);
+      return rejectWithValue('error');
+    }
+  },
+);
+
 export const forgetPasswordCode = createAsyncThunk(
   'auth/forget-password-code',
   async ({
-    token,
     code,
     setError,
     setIsSubmitting,
     routerNext,
   }: {
-    token: string;
     code: string;
     setError: (error: string) => void;
     setIsSubmitting: (boolean: boolean) => void;
@@ -548,11 +586,11 @@ export const forgetPasswordCode = createAsyncThunk(
   }) => {
     try {
       setError('');
+      const token = await getItem('forgetPasswordToken');
       const response = await axiosInstance.post(apiUrls.forgetPasswordCode(), {
         code,
         token,
       });
-      console.log("response", response.data)
       if (response.data.ok) {
         setIsSubmitting(false);
         routerNext();
