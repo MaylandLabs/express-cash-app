@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Text, View, Image, Pressable, TextInput, Animated, StyleSheet, Alert } from "react-native";
 import { styled } from "nativewind";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useFonts, Poppins_400Regular, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
-import * as SplashScreen from 'expo-splash-screen';
 import * as ImagePicker from 'expo-image-picker';
 import { images } from "../theme";
 import { FONTS } from "../theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAppDispatch } from "../store";
+import { getUserAsync } from "../store/actions/auth";
 const StyledPressable = styled(Pressable);
 
 
@@ -21,9 +21,9 @@ const EditProfile = () => {
   const [address, setAddress] = useState("Calle Ficticia 123");
   const [image, setImage] = useState(images.logo);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-  const [emailModalVisible, setEmailModalVisible] = useState(false);
-
-  const editProfileAnimatedScale = React.useRef(new Animated.Value(1)).current;
+  const [user, setUser] = useState(null);
+  const dispatch = useAppDispatch();
+  const editProfileAnimatedScale = useRef(new Animated.Value(1)).current;
   const handlePressIn = (animatedValue) => {
     Animated.spring(animatedValue, {
       toValue: 0.95,
@@ -42,6 +42,13 @@ const EditProfile = () => {
     }).start();
   };
 
+  useEffect(() => {
+    dispatch(getUserAsync()).then((response) => {
+      setUser(response.payload);
+    });
+  }, []);
+
+  console.log("user", user)
 
   const handleChangeImage = async () => {
     try {
@@ -123,28 +130,28 @@ const EditProfile = () => {
               style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
               placeholder="Nombre y Apellido"
               placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              value={name}
+              value={user ? user.user.first_name : "Félix Bilbao"}
               onChangeText={setName}
             />
             <TextInput
               style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
               placeholder="Correo electrónico"
               placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              value={email}
+              value={user ? user.user.email : "felixbilbao01@gmail.com"}
               onChangeText={setEmail}
             />
             <TextInput
               style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
               placeholder="Teléfono"
               placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              value={phone}
+              value={user ? user.user.phone : "123-456-789"}
               onChangeText={setPhone}
             />
             <TextInput
               style={[styles.input, { fontFamily: 'Poppins_400Regular' }]}
               placeholder="Dirección"
               placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              value={address}
+              value={user ? user.user.address : "Calle Ficticia 123"}
               onChangeText={setAddress}
             />
           </View>

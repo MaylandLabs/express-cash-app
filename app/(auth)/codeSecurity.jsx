@@ -5,10 +5,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAppDispatch } from "../../store";
 import { verifyCodeAsync,forgetPasswordCode  } from "../../store/actions/auth";
 import { getItem } from "../../utils/storage";
-import { tokenAccess } from "../../store/api";
 
-export default function CodeSecurityScreen({onContinue}) {
-  const [verificationCode, setVerificationCode] = useState(["", "", "", "", ""]);
+export default function CodeSecurityScreen({ verificationCode, setVerificationCode, type = "verification", setIsNewPasswordStep }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -36,21 +34,22 @@ export default function CodeSecurityScreen({onContinue}) {
       setShowToast(false);
 
       try {
-        if (onContinue === "passwordRecovery") {
+        if (type === "passwordRecovery") {
+          const email = await getItem('recovery_email');
           dispatch(forgetPasswordCode({ 
-            code,
-            token: await getItem(tokenAccess.tokenName),
-            setError: (error) => {
-              setErrorMessage(error);
+            data: { email, code },
+            setActive: setIsLoading,
+            setError: (errorMsg) => {
+              setErrorMessage(errorMsg);
               setShowToast(true);
             },
             setIsSubmitting: setIsLoading,
-            routerNext: () => router.push("/(auth)/reset-password")
+            routerNext: () => setIsNewPasswordStep(true)
           }))
           .unwrap()
           .then(() => {
             console.log("Código verificado exitosamente");
-            router.push("/(auth)/reset-password");
+            setIsNewPasswordStep(true);
           })
           .catch((error) => {
             console.log("error", error);

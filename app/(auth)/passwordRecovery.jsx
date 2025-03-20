@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,10 @@ import {
 import Toast from "../../components/Toast";
 import RenderVerificationCode from "./codeSecurity";
 import { useAppDispatch } from "../../store";
-import { forgetPassword, forgetPasswordCode } from "../../store/actions/auth";
+import { forgetPassword } from "../../store/actions/auth";
+import VerifyEmail from "./verifyEmail";
+import { setItem, getItem } from "../../utils/storage"; 
+import { setPassword } from "../../store/actions/auth";
 
 export default function PasswordRecovery() {
   const [email, setEmail] = useState("");
@@ -86,9 +89,10 @@ export default function PasswordRecovery() {
       });
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!isVerificationStep) {
       if (isValidEmail(email)) {
+        await setItem('recovery_email', email);
         sendVerificationCode();
       } else {
         setToastMessage("Por favor ingresa un email válido");
@@ -96,12 +100,7 @@ export default function PasswordRecovery() {
       }
     } else if (isVerificationStep && !isNewPasswordStep) {
       const fullCode = verificationCode.join("");
-      if (fullCode === "12345") {
-        setIsNewPasswordStep(true);
-      } else {
-        setToastMessage("Código de verificación incorrecto");
-        setShowToast(true);
-      }
+      handleVerifyCode();
     } else {
       if (!isValidPassword(newPassword)) {
         setToastMessage("La contraseña debe tener al menos 6 caracteres");
@@ -113,34 +112,29 @@ export default function PasswordRecovery() {
         setShowToast(true);
         return;
       }
-
-      router.push("/(auth)/success");
+      dispatch(setPassword({ 
+        data: {
+          code: verificationCode.join(''),
+          password: newPassword,
+          confirmPassword: confirmPassword
+        },
+        setActive: setIsLoading,
+        setError: (errorMsg) => {
+          setError(errorMsg);
+          Alert.alert("Error", errorMsg);
+        },
+        dispatch: dispatch
+      }))
+      .unwrap()
+      .then(() => {
+        Alert.alert("Éxito", "Contraseña actualizada correctamente");
+        router.push("/(auth)/loginForm");
+      })
+      .catch((error) => {
+        console.log("Error al cambiar la contraseña:", error);
+      });
     }
   };
-
-  const renderEmailInput = () => (
-    <View style={styles.formContainer}>
-      <Text style={[styles.title, { fontFamily: "Poppins_600SemiBold" }]}>
-        Recuperar Contraseña
-      </Text>
-      <Text style={[styles.subtitle, { fontFamily: "Poppins_400Regular" }]}>
-        Resetea tu contraseña y vuelve a ingresar a tu cuenta personal.
-      </Text>
-
-      <Text style={[styles.label, { fontFamily: "Poppins_400Regular" }]}>
-        Email
-      </Text>
-      <TextInput
-        style={[styles.input, { fontFamily: "Poppins_400Regular" }]}
-        placeholder="Escribe tu email"
-        placeholderTextColor="#A9A9A9"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-    </View>
-  );
 
   const renderNewPassword = () => (
     <View style={styles.formContainer}>
@@ -177,6 +171,13 @@ export default function PasswordRecovery() {
     </View>
   );
 
+  console.log('Estado actual:', {
+    isNewPasswordStep,
+    isVerificationStep,
+    email,
+    verificationCode: verificationCode.join('')
+  });
+
   return (
     <LinearGradient colors={["#055B72", "#004C5E"]} style={styles.gradient}>
       <KeyboardAvoidingView
@@ -184,50 +185,72 @@ export default function PasswordRecovery() {
         style={styles.mainContainer}
       >
         {isNewPasswordStep ? (
-          renderNewPassword()
+          <>
+            {renderNewPassword()}
+            <View style={styles.buttonContainer}>
+              <Toast
+                message={toastMessage}
+                visible={showToast}
+                onHide={() => setShowToast(false)}
+              />
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={handleContinue}
+                disabled={isLoading}
+              >
+                <Text style={[styles.continueButtonText]}>
+                  {isLoading ? "Procesando..." : "Continuar"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => setIsNewPasswordStep(false)}
+              >
+                <Text style={[styles.backButtonText, { fontFamily: "Poppins_600SemiBold" }]}>
+                  Volver
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
         ) : isVerificationStep ? (
           <RenderVerificationCode
             verificationCode={verificationCode}
             setVerificationCode={setVerificationCode}
-            onContinue={"passwordRecovery"}
+            type="passwordRecovery"
+            setIsNewPasswordStep={setIsNewPasswordStep}
           />
         ) : (
-          renderEmailInput()
-        )}
-        {!isVerificationStep && (
-          <View style={styles.buttonContainer}>
-            <Toast
-              message={toastMessage}
-              visible={showToast}
-              onHide={() => setShowToast(false)}
-            />
-            <TouchableOpacity
-              style={styles.continueButton}
-              onPress={handleContinue}
-            >
-              <Text style={[styles.continueButtonText]}>Continuar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => {
-                if (isNewPasswordStep) {
-                  setIsNewPasswordStep(false);
-                } else {
-                  router.back();
-                }
-              }}
-            >
-              <Text
-                style={[
-                  styles.backButtonText,
-                  { fontFamily: "Poppins_600SemiBold" },
-                ]}
+          <>
+            <VerifyEmail email={email} setEmail={setEmail} />
+            <View style={styles.buttonContainer}>
+              <Toast
+                message={toastMessage}
+                visible={showToast}
+                onHide={() => setShowToast(false)}
+              />
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={handleContinue}
               >
-                Volver
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <Text style={[styles.continueButtonText]}>Continuar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <Text
+                  style={[
+                    styles.backButtonText,
+                    { fontFamily: "Poppins_600SemiBold" },
+                  ]}
+                >
+                  Volver
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
         )}
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -276,6 +299,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#004D56",
     borderRadius: 8,
     paddingHorizontal: 10,
+    height: 60,
     fontSize: 16,
     color: "#FFFFFF",
     marginBottom: 20,
@@ -318,3 +342,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+// brunodistaulo03@gmail.com

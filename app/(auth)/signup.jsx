@@ -28,7 +28,6 @@ export default function Signup() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [backButton, setbackButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -42,6 +41,18 @@ export default function Signup() {
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  const formatDate = (text) => {
+    const cleanText = text.replace(/[^\d]/g, '');
+    
+    if (cleanText.length <= 2) {
+      return cleanText;
+    } else if (cleanText.length <= 4) {
+      return `${cleanText.slice(0, 2)}/${cleanText.slice(2)}`;
+    } else {
+      return `${cleanText.slice(0, 2)}/${cleanText.slice(2, 4)}/${cleanText.slice(4, 8)}`;
+    }
+  };
 
   const validateForm = () => {
     if (
@@ -61,7 +72,7 @@ export default function Signup() {
       setShowToast(true);
       return false;
     }
-    const cuilRegex = /^(\d{2}[-\s.]?\d{3}[-\s.]?\d{3})$/;
+    const cuilRegex = /^(\d{2}[-\s.]?\d{8}[-\s.]?\d{1})$/;
     if (!cuilRegex.test(formData.cuil.replace(/[-.\s]/g, ''))) {
       setToastMessage("El CUIL/CUIT debe tener 8 dígitos");
       setShowToast(true);
@@ -74,6 +85,19 @@ export default function Signup() {
       setShowToast(true);
       return false;
     }
+    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    const date = formData.birthDate.split("/");
+    if (!dateRegex.test(formData.birthDate) || date.length !== 3) {
+      setToastMessage("La fecha de nacimiento debe ser en formato dd/mm/yyyy");
+      setShowToast(true);
+      return false;
+    }
+    if (date[0] > 31 || date[1] > 12 || date[2] > 2025) {
+      setToastMessage("La fecha de nacimiento no es válida");
+      setShowToast(true);
+      return false;
+    }
+
     if (formData.password.length < 8) {
       setToastMessage("La contraseña debe tener al menos 8 caracteres");
       setShowToast(true);
@@ -172,7 +196,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput 
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="Juan"
                 placeholderTextColor="#A9A9A9"
@@ -187,7 +211,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput 
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="Martinez"
                 placeholderTextColor="#A9A9A9"
@@ -203,7 +227,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="dibu.martinez@gmail.com"
                 placeholderTextColor="#A9A9A9"
@@ -220,7 +244,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="12.345.678"
                 placeholderTextColor="#A9A9A9"
@@ -237,13 +261,15 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput 
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="12/01/1990"
                 placeholderTextColor="#A9A9A9"
                 value={formData.birthDate}
+                keyboardType="numeric"
+                maxLength={10}
                 onChangeText={(text) =>
-                  setFormData({ ...formData, birthDate: text })
+                  setFormData({ ...formData, birthDate: formatDate(text) })
                 }
               />
             </View>
@@ -252,7 +278,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="+54 011-12345678"
                 placeholderTextColor="#A9A9A9"
@@ -268,7 +294,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="4001"
                 placeholderTextColor="#A9A9A9"
@@ -283,7 +309,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="••••••••••"
                 placeholderTextColor="#A9A9A9"
@@ -309,7 +335,7 @@ export default function Signup() {
             </Text>
             <View className="relative mb-6">
               <TextInput
-                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2"
+                className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="••••••••••"
                 placeholderTextColor="#A9A9A9"
