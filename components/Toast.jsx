@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import ErrorLogo from '../assets/ErrorLogo';
+import SuccessLogo from '../assets/SuccessLogo';
 
-const Toast = ({ message, visible, onHide }) => {
+const Toast = ({ message, visible, onHide, type = "error" }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
   
     useEffect(() => {
@@ -25,10 +26,12 @@ const Toast = ({ message, visible, onHide }) => {
   
     if (!visible) return null;
   
+    const isError = type === "error";
+  
     return (
-      <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
+      <Animated.View style={[styles.toast, isError ? styles.errorToast : styles.successToast, { opacity: fadeAnim }]}>
         <View style={styles.toastContent}>
-          <ErrorLogo style={styles.errorIcon} />
+          {isError ? <ErrorLogo style={styles.icon} /> : <SuccessLogo style={styles.icon} />}
           <Text style={styles.toastText}>{message}</Text>
         </View>
       </Animated.View>
@@ -37,8 +40,6 @@ const Toast = ({ message, visible, onHide }) => {
 
   const styles = StyleSheet.create({
     toast: {
-        backgroundColor: '#FA634F94',
-        opacity: 0.58,
         padding: 12 ,
         display: 'flex',
         alignItems: 'center',
@@ -46,8 +47,15 @@ const Toast = ({ message, visible, onHide }) => {
         borderRadius: 8,
         marginBottom: 30,
         borderWidth: 0.5,
-        borderColor: '#F5F5F580',
         width: '100%',
+      },
+      errorToast: {
+        backgroundColor: '#FA634F94',
+        borderColor: '#F5F5F580',
+      },
+      successToast: {
+        backgroundColor: '#4CAF50',
+        borderColor: '#388E3C',
       },
       toastContent: {
         flexDirection: 'row',
@@ -55,7 +63,7 @@ const Toast = ({ message, visible, onHide }) => {
         justifyContent: 'center',
        
       },
-      errorIcon: {
+      icon: {
         marginRight: 5,
       },
       toastText: {

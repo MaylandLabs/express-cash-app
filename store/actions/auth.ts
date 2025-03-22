@@ -519,7 +519,7 @@ export const getUserAsync = createAsyncThunk(
         return rejectWithValue('error');
       }
     } catch (error) {
-      console.error('Error en getUserAsync:', error);
+      // console.error('Error en getUserAsync:', error);
       return rejectWithValue('error');
     }
   },
@@ -536,7 +536,6 @@ export const updateUserDataAsync = createAsyncThunk(
     }: {
       data: {
         id: string;
-        email?: string;
         first_name?: string;
         last_name?: string;
         cuil?: string;
@@ -552,7 +551,9 @@ export const updateUserDataAsync = createAsyncThunk(
   ) => {
     setActive(true);
     try {
-      const response = await axiosInstance.post(apiUrls.updateDataId(data.id), data);
+      console.log("data", data)
+      const response = await axiosInstance.put(apiUrls.updateDataId(data.id), data);
+      console.log("response update", response.data)
       if (response.data.ok) {
         setActive(false);
         dispatch(getUserAsync());
@@ -586,11 +587,13 @@ export const forgetPasswordCode = createAsyncThunk(
   }) => {
     try {
       setError('');
+      console.log("code", code)
       const token = await getItem('forgetPasswordToken');
       const response = await axiosInstance.post(apiUrls.forgetPasswordCode(), {
         code,
         token,
       });
+      console.log("response forget password code", response.data)
       if (response.data.ok) {
         setIsSubmitting(false);
         routerNext();

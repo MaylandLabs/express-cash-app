@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,7 +23,7 @@ import RenderVerificationCode from "./codeSecurity";
 import { useAppDispatch } from "../../store";
 import { forgetPassword } from "../../store/actions/auth";
 import VerifyEmail from "./verifyEmail";
-import { setItem, getItem } from "../../utils/storage"; 
+import { setItem, getItem } from "../../utils/storage";
 import { setPassword } from "../../store/actions/auth";
 
 export default function PasswordRecovery() {
@@ -41,6 +42,7 @@ export default function PasswordRecovery() {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [type, setType] = useState("error");
   const [error, setError] = useState(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -66,22 +68,25 @@ export default function PasswordRecovery() {
 
   const sendVerificationCode = async () => {
     if (!email) {
-      Alert.alert("Error", "Por favor ingresa un email");
+      setToastMessage("Por favor ingresa un email");
+      setShowToast(true);
       return;
     }
 
-    dispatch(forgetPassword({ 
-      data: { email },
-      setActive: setIsLoading,
-      setError: (errorMsg) => {
-        setError(errorMsg);
-        Alert.alert("Error", errorMsg);
-      },
-      dispatch: dispatch
-    }))
+    dispatch(
+      forgetPassword({
+        data: { email },
+        setActive: setIsLoading,
+        setError: (errorMsg) => {
+          setError(errorMsg);
+          setToastMessage(errorMsg);
+          setShowToast(true);
+        },
+        dispatch: dispatch,
+      })
+    )
       .unwrap()
       .then(() => {
-        Alert.alert("Éxito", "Se ha enviado el código de verificación a tu email");
         setIsVerificationStep(true);
       })
       .catch((error) => {
@@ -92,7 +97,7 @@ export default function PasswordRecovery() {
   const handleContinue = async () => {
     if (!isVerificationStep) {
       if (isValidEmail(email)) {
-        await setItem('recovery_email', email);
+        await setItem("recovery_email", email);
         sendVerificationCode();
       } else {
         setToastMessage("Por favor ingresa un email válido");
@@ -112,27 +117,40 @@ export default function PasswordRecovery() {
         setShowToast(true);
         return;
       }
-      dispatch(setPassword({ 
-        data: {
-          code: verificationCode.join(''),
-          password: newPassword,
-          confirmPassword: confirmPassword
-        },
-        setActive: setIsLoading,
-        setError: (errorMsg) => {
-          setError(errorMsg);
-          Alert.alert("Error", errorMsg);
-        },
-        dispatch: dispatch
-      }))
-      .unwrap()
-      .then(() => {
-        Alert.alert("Éxito", "Contraseña actualizada correctamente");
-        router.push("/(auth)/loginForm");
-      })
-      .catch((error) => {
-        console.log("Error al cambiar la contraseña:", error);
-      });
+      dispatch(
+        setPassword({
+          data: {
+            code: verificationCode.join(""),
+            password: newPassword,
+            confirmPassword: confirmPassword,
+          },
+          setActive: setIsLoading,
+          setError: (errorMsg) => {
+            setError(errorMsg);
+            setToastMessage(errorMsg);
+            setShowToast(true);
+          },
+          dispatch: dispatch,
+        })
+      )
+        .unwrap()
+        .then((response) => {
+          if (response.ok) {
+            setType("success");
+            setToastMessage("Contraseña actualizada correctamente");
+            setShowToast(true);
+            setTimeout(() => {
+              router.push("/(auth)/loginForm");
+            }, 3000);
+          } else {
+            setType("error");
+            setToastMessage(response.message);
+            setShowToast(true);
+          }
+        })
+        .catch((error) => {
+          console.log("Error al cambiar la contraseña:", error);
+        });
     }
   };
 
@@ -171,12 +189,12 @@ export default function PasswordRecovery() {
     </View>
   );
 
-  console.log('Estado actual:', {
-    isNewPasswordStep,
-    isVerificationStep,
-    email,
-    verificationCode: verificationCode.join('')
-  });
+  // console.log("Estado actual:", {
+  //   isNewPasswordStep,
+  //   isVerificationStep,
+  //   email,
+  //   verificationCode: verificationCode.join(""),
+  // });
 
   return (
     <LinearGradient colors={["#055B72", "#004C5E"]} style={styles.gradient}>
@@ -207,7 +225,12 @@ export default function PasswordRecovery() {
                 style={styles.backButton}
                 onPress={() => setIsNewPasswordStep(false)}
               >
-                <Text style={[styles.backButtonText, { fontFamily: "Poppins_600SemiBold" }]}>
+                <Text
+                  style={[
+                    styles.backButtonText,
+                    { fontFamily: "Poppins_600SemiBold" },
+                  ]}
+                >
                   Volver
                 </Text>
               </TouchableOpacity>
@@ -222,12 +245,18 @@ export default function PasswordRecovery() {
           />
         ) : (
           <>
+            {isLoading && (
+              <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center bg-black/50 z-[999]">
+                <ActivityIndicator size="large" color="#7CBA47" />
+              </View>
+            )}
             <VerifyEmail email={email} setEmail={setEmail} />
             <View style={styles.buttonContainer}>
               <Toast
                 message={toastMessage}
                 visible={showToast}
                 onHide={() => setShowToast(false)}
+                type={type}
               />
               <TouchableOpacity
                 style={styles.continueButton}

@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppDispatch } from "../../store";
-import { verifyCodeAsync,forgetPasswordCode  } from "../../store/actions/auth";
+import { verifyCodeAsync, forgetPasswordCode } from "../../store/actions/auth";
 import { getItem } from "../../utils/storage";
 
 export default function CodeSecurityScreen({ verificationCode, setVerificationCode, type = "verification", setIsNewPasswordStep }) {
@@ -13,12 +13,17 @@ export default function CodeSecurityScreen({ verificationCode, setVerificationCo
   const router = useRouter();
   const inputsRef = useRef([]);
   const dispatch = useAppDispatch();
+  const [verificationCodeRegister, setVerificationCodeRegister] = useState(["", "", "", "", ""]);
+
+  // Asegúrate de que verificationCode siempre tenga un valor válido
+  const code = verificationCode || verificationCodeRegister;
+  const setCode = setVerificationCode || setVerificationCodeRegister;
 
   const handleCodeChange = (text, index) => {
-    const newCode = [...verificationCode];
+    const newCode = [...code];
     newCode[index] = text;
 
-    setVerificationCode(newCode);
+    setCode(newCode);
 
     if (text.length === 1 && index < 4) {
       inputsRef.current[index + 1]?.focus();
@@ -26,18 +31,18 @@ export default function CodeSecurityScreen({ verificationCode, setVerificationCo
   };
 
   const handleVerifyCode = async () => {
-    const code = verificationCode.join("");
+    const fullCode = code.join("");
 
-    if (code.length === 5) {
+    console.log(fullCode)
+    if (fullCode.length === 5) {
       setIsLoading(true);
       setErrorMessage("");
       setShowToast(false);
 
       try {
         if (type === "passwordRecovery") {
-          const email = await getItem('recovery_email');
           dispatch(forgetPasswordCode({ 
-            data: { email, code },
+            code: fullCode,
             setActive: setIsLoading,
             setError: (errorMsg) => {
               setErrorMessage(errorMsg);
@@ -48,17 +53,17 @@ export default function CodeSecurityScreen({ verificationCode, setVerificationCo
           }))
           .unwrap()
           .then(() => {
-            console.log("Código verificado exitosamente");
+            console.log("Código verificado exitosamente en recuperar contraseña");
             setIsNewPasswordStep(true);
           })
           .catch((error) => {
             console.log("error", error);
-            setErrorMessage("Error al verificar el código");
+            setErrorMessage("Error al verificar el código en recuperar contraseña");
             setShowToast(true);
           });
         } else {
-          let result = await dispatch(verifyCodeAsync({ code })).unwrap();
-          console.log("result", result)
+          let result = await dispatch(verifyCodeAsync({ code: fullCode })).unwrap();
+          console.log("result", result);
 
           if (result.ok) {
             router.push("/(auth)/success");
@@ -97,7 +102,7 @@ export default function CodeSecurityScreen({ verificationCode, setVerificationCo
           </View>
 
           <View className="flex-row justify-between mt-5">
-            {verificationCode.map((digit, index) => (
+            {code.map((digit, index) => (
               <TextInput
                 key={index}
                 ref={(el) => (inputsRef.current[index] = el)}

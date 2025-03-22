@@ -1,17 +1,14 @@
-import React, { useState, useCallback } from 'react';
-import { Text, View, Image, Pressable, Animated, ScrollView, FlatList } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { Text, View, Image, Pressable, ScrollView } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { styled } from "nativewind";
-import { useFonts, Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
-import * as SplashScreen from 'expo-splash-screen';
 import { ArrowRight } from 'lucide-react-native';
 import { FONTS, images } from '../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaskedView from '@react-native-masked-view/masked-view';
 import ScrollViewTopMask from './ScrollViewTopMask';
-
-const StyledPressable = styled(Pressable);
+import { useAppDispatch } from '../store';
+import { getUserAsync } from '../store/actions/auth';
+import { useSelector } from 'react-redux';
 
 const MOCK_LOAN_DATA = {
   amount: 75000,
@@ -54,9 +51,16 @@ const ProgressBar = () => {
 };
 
 const HomeView = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const user = useSelector((state) => state.auth.user);
 
+  useEffect(() => {
+    if (!user) {
+      dispatch(getUserAsync());
+    }
+  }, [user]);
 
   return (
     <LinearGradient
@@ -73,7 +77,7 @@ const HomeView = () => {
               className="w-8 h-8"
               resizeMode="contain"
             />
-            <Text className="text-lg text-white" style={{ fontFamily: FONTS.MEDIUM }}>Hola, Félix</Text>
+            <Text className="text-lg text-white" style={{ fontFamily: FONTS.MEDIUM }}>Hola, {user ? user.first_name : "Félix"}</Text>
             <ArrowRight size={18} color="white" />
         </Pressable>
 

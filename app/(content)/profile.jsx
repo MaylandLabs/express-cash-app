@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch } from "../../store";
 import { getUserAsync, logOutAsync } from "../../store/actions/auth";
+import { useSelector } from "react-redux";
 
 const StyledPressable = styled(Pressable);
 
@@ -18,7 +19,7 @@ const Profile = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isPushEnabled, setIsPushEnabled] = useState(false);
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.auth.user);
 
   const editProfileAnimatedScale = useRef(new Animated.Value(1)).current;
   const loansAnimatedScale = useRef(new Animated.Value(1)).current;
@@ -40,10 +41,10 @@ const Profile = () => {
 
 
   useEffect(() => {
-    dispatch(getUserAsync()).then((response) => {
-      setUser(response.payload);
-    });
-  }, []);
+    if (!user) {
+      dispatch(getUserAsync());
+    }
+  }, [user]);
 
   console.log("user", user)
 
@@ -80,8 +81,8 @@ const Profile = () => {
               resizeMode="contain"
             />
           </View>
-          <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>{user ? user.user.first_name : "Félix Bilbao"}</Text>
-          <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>{user ? user.user.email : "felixbilbao01@gmail.com"}</Text>
+          <Text style={[styles.profileName, { fontFamily: 'Poppins_600SemiBold' }]}>{user ? user.first_name : "Félix Bilbao"}</Text>
+          <Text style={[styles.profileEmail, { fontFamily: 'Poppins_400Regular' }]}>{user ? user.email : "felixbilbao01@gmail.com"}</Text>
 
           
           <Animated.View style={{ transform: [{ scale: editProfileAnimatedScale }] }}>
@@ -138,21 +139,6 @@ const Profile = () => {
         <View>
           <Text style={[styles.sectionTitle, { fontFamily: 'Poppins_600SemiBold' }]}>Preferencias</Text>
           <View style={styles.card}>
-          <View style={styles.cardItem}>
-            <View style={styles.cardItemContent}>
-              <Bell size={24} color="white" />
-              <Text style={styles.cardItemText}>Notificaciones push</Text>
-              <View style={styles.switchContainer}>
-                <Switch
-                  value={isPushEnabled}
-                  onValueChange={toggleSwitch}
-                  trackColor={{ false: "#767577", true: "#79C72B" }}
-                  thumbColor={isPushEnabled ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-            </View>
-          </View>
-            <View style={styles.divider}></View>
             <Animated.View style={{ transform: [{ scale: settingsAnimatedScale }] }}>
             <StyledPressable
               style={styles.cardItem}
