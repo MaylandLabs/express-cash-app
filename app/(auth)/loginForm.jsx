@@ -23,6 +23,7 @@ import { useAppDispatch } from "../../store";
 import { logInAsync } from "../../store/actions/auth";
 import Toast from "../../components/Toast";
 import { FONTS } from "../../theme";
+import { CustomAlert } from "../../components/customAlert";
 
 const LoginForm = () => {
   const insets = useSafeAreaInsets();
@@ -51,32 +52,6 @@ const LoginForm = () => {
     Poppins_400Regular,
     Poppins_600SemiBold,
   });
-
-  // Add keyboard listeners to track keyboard visibility
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      (event) => {
-        setKeyboardVisible(true);
-        // Scroll to bottom when keyboard appears
-        if (scrollViewRef.current) {
-          scrollViewRef.current.scrollToEnd({ animated: true });
-        }
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    // Clean up listeners
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
 
   if (!fontsLoaded) {
     return null;
@@ -182,151 +157,148 @@ const LoginForm = () => {
   };
 
   return (
-    <LinearGradient colors={["#055B72", "#004C5E"]} className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+    <LinearGradient
+      colors={["#055B72", "#004C5E"]}
+      className="flex-1"
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
       {isLoading && (
         <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 justify-center items-center z-[999]">
           <ActivityIndicator size="large" color="#7CBA47" />
         </View>
       )}
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-        pointerEvents={isLoading ? "none" : "auto"}
+      <ScrollView
+        className="flex-1 px-4 pt-5 pb-5"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bounces={false}
       >
-        <ScrollView
-          ref={scrollViewRef}
-          className="flex-1 px-4 pt-5 pb-5"
-          contentContainerStyle={keyboardVisible && { paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-        >
-          <View className="flex-1 flex flex-col justify-between h-screen py-20">
-            <View className="flex-1">
-              <View className="mt-10 mb-5 gap-2">
-                <Text
-                  className="text-white text-2xl text-center"
-                  style={{ fontFamily: FONTS.SEMIBOLD }}
-                >
-                  Iniciar Sesión
-                </Text>
-                <Text
-                  className="text-white text-sm text-center opacity-80"
-                  style={{ fontFamily: FONTS.REGULAR }}
-                >
-                  Completa los datos para acceder a todos nuestros beneficios.
-                </Text>
-              </View>
+        <View className="flex-1 flex flex-col justify-between h-screen py-20">
+          <View className="flex-1">
+            <View className="mt-10 mb-5 gap-2">
+              <Text
+                className="text-white text-2xl text-center"
+                style={{ fontFamily: FONTS.SEMIBOLD }}
+              >
+                Iniciar Sesión
+              </Text>
+              <Text
+                className="text-white text-sm text-center opacity-80"
+                style={{ fontFamily: FONTS.REGULAR }}
+              >
+                Completa los datos para acceder a todos nuestros beneficios.
+              </Text>
+            </View>
 
-              <View className="mb-5">
-                <Text
-                  className="text-[#7CBA47] text-sm mb-2"
-                  style={{ fontFamily: FONTS.SEMIBOLD }}
-                >
-                  Email
-                </Text>
-                <TextInput
-                  className={`bg-[#004D56] rounded-[10px] p-4 text-white text-sm w-full border-2 h-[60px] border-[#7CBA47] mb-5 ${
-                    touched.email && errors.email ? "border-[#FF3B30]" : ""
-                  }`}
-                  style={{ fontFamily: FONTS.REGULAR }}
-                  placeholder="dibu.martinez@gmail.com"
-                  placeholderTextColor="#A9A9A9"
-                  keyboardType="email-address"
-                  value={formData.email}
-                  onChangeText={(text) => handleChange("email", text)}
-                  onBlur={() => handleBlur("email")}
-                />
-
-                <Text
-                  className="text-[#7CBA47] text-sm mb-2"
-                  style={{ fontFamily: FONTS.SEMIBOLD }}
-                >
-                  Contraseña
-                </Text>
-                <View className="relative mb-6">
+            <View className="mb-5">
+              <Text
+                className="text-[#7CBA47] text-sm mb-2"
+                style={{ fontFamily: FONTS.SEMIBOLD }}
+              >
+                Email
+              </Text>
               <TextInput
-                className={`bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px] ${
-                  touched.password && errors.password ? "border-[#FF3B30]" : ""
+                className={`bg-[#004D56] rounded-[10px] p-4 text-white text-sm w-full border-2 h-[60px] border-[#7CBA47] mb-5 ${
+                  touched.email && errors.email ? "border-[#FF3B30]" : ""
                 }`}
                 style={{ fontFamily: FONTS.REGULAR }}
-                placeholder="••••••••••"
+                placeholder="dibu.martinez@gmail.com"
                 placeholderTextColor="#A9A9A9"
-                value={formData.password}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, password: text })
-                }
-                secureTextEntry={!showPassword}
+                keyboardType="email-address"
+                value={formData.email}
+                onChangeText={(text) => handleChange("email", text)}
+                onBlur={() => handleBlur("email")}
               />
-              <TouchableOpacity
-                className="absolute top-4 right-4"
-                onPress={() => setShowPassword(!showPassword)}
+
+              <Text
+                className="text-[#7CBA47] text-sm mb-2"
+                style={{ fontFamily: FONTS.SEMIBOLD }}
               >
-                <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={24}
-                  color="#7CBA47"
+                Contraseña
+              </Text>
+              <View className="relative mb-6">
+                <TextInput
+                  className={`bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px] ${
+                    touched.password && errors.password
+                      ? "border-[#FF3B30]"
+                      : ""
+                  }`}
+                  style={{ fontFamily: FONTS.REGULAR }}
+                  placeholder="••••••••••"
+                  placeholderTextColor="#A9A9A9"
+                  value={formData.password}
+                  onChangeText={(text) =>
+                    setFormData({ ...formData, password: text })
+                  }
+                  secureTextEntry={!showPassword}
                 />
-              </TouchableOpacity>
-            </View>
                 <TouchableOpacity
-                  onPress={() => router.push("/(auth)/passwordRecovery")}
-                  className="items-center mb-5"
+                  className="absolute top-4 right-4"
+                  onPress={() => setShowPassword(!showPassword)}
                 >
-                  <Text
-                    className="text-[#00C853] text-sm"
-                    style={{ fontFamily: FONTS.REGULAR }}
-                  >
-                    ¿Has olvidado tu contraseña?
-                  </Text>
+                  <Ionicons
+                    name={showPassword ? "eye-outline" : "eye-off-outline"}
+                    size={24}
+                    color="#7CBA47"
+                  />
                 </TouchableOpacity>
               </View>
-            </View>
-
-            <View className={`mb-${Platform.OS === "ios" ? "5" : "0"}`}>
-              <View className="h-fit ">
-                <Toast
-                  message={toastMessage}
-                  visible={showToast}
-                  onHide={() => setShowToast(false)}
-                />
-              </View>
               <TouchableOpacity
-                className={`w-full bg-[#79C72B] rounded-[10px] p-4 items-center mb-5 ${
-                  isLoading ? "opacity-70" : ""
-                }`}
-                onPress={handleLogin}
-                disabled={isLoading}
+                onPress={() => router.push("/(auth)/passwordRecovery")}
+                className="items-center mb-5"
               >
                 <Text
-                  className="text-[#055B72] text-base"
-                  style={{ fontFamily: FONTS.SEMIBOLD }}
-                >
-                  {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
-                </Text>
-              </TouchableOpacity>
-
-              <View className="flex-row justify-center items-center">
-                <Text
-                  className="text-[#B0BEC5] text-sm"
+                  className="text-[#00C853] text-sm"
                   style={{ fontFamily: FONTS.REGULAR }}
                 >
-                  ¿No tienes cuenta aún?
+                  ¿Has olvidado tu contraseña?
                 </Text>
-                <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-                  <Text
-                    className="text-[#7CBA47] text-sm ml-1"
-                    style={{ fontFamily: FONTS.SEMIBOLD }}
-                  >
-                    Regístrate
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          <View className={`mb-${Platform.OS === "ios" ? "5" : "0"}`}>
+            <View className="h-fit ">
+              <Toast
+                message={toastMessage}
+                visible={showToast}
+                onHide={() => setShowToast(false)}
+              />
+            </View>
+            <TouchableOpacity
+              className={`w-full bg-[#79C72B] rounded-[10px] p-4 items-center mb-5 ${
+                isLoading ? "opacity-70" : ""
+              }`}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              <Text
+                className="text-[#055B72] text-base"
+                style={{ fontFamily: FONTS.SEMIBOLD }}
+              >
+                {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+              </Text>
+            </TouchableOpacity>
+            <View className="flex-row justify-center items-center">
+              <Text
+                className="text-[#B0BEC5] text-sm"
+                style={{ fontFamily: FONTS.REGULAR }}
+              >
+                ¿No tienes cuenta aún?
+              </Text>
+              <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+                <Text
+                  className="text-[#7CBA47] text-sm ml-1"
+                  style={{ fontFamily: FONTS.SEMIBOLD }}
+                >
+                  Regístrate
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     </LinearGradient>
   );
 };

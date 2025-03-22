@@ -1,4 +1,13 @@
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Pressable, Image,} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,8 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as SplashScreen from "expo-splash-screen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "../../components/Toast";
-import { FONTS } from '../../theme';
-import google_icon from "../../assets/images/google_icon.png";
+import { FONTS, images } from "../../theme";
 import { registerInAsync } from "../../store/actions/auth";
 import { useAppDispatch } from "../../store";
 
@@ -43,23 +51,27 @@ export default function Signup() {
   }, [fontsLoaded]);
 
   const formatDate = (text) => {
-    const cleanText = text.replace(/[^\d]/g, '');
-    
-    if (cleanText.length <= 2) {
+    const cleanText = text.replace(/[^\d]/g, "");
+
+    if (cleanText.length <= 4) {
       return cleanText;
-    } else if (cleanText.length <= 4) {
-      return `${cleanText.slice(0, 2)}/${cleanText.slice(2)}`;
+    } else if (cleanText.length <= 6) {
+      return `${cleanText.slice(0, 4)}/${cleanText.slice(4)}`;
     } else {
-      return `${cleanText.slice(0, 2)}/${cleanText.slice(2, 4)}/${cleanText.slice(4, 8)}`;
+      return `${cleanText.slice(0, 4)}/${cleanText.slice(4, 6)}/${cleanText.slice(6, 8)}`;
     }
   };
 
   const validateForm = () => {
     if (
       !formData.email ||
+      !formData.name ||
+      !formData.lastName ||
       !formData.cuil ||
+      !formData.birthDate ||
       !formData.telefono ||
       !formData.password ||
+      !formData.zipcode ||
       !formData.confirmPassword
     ) {
       setToastMessage("Todos los campos son obligatorios");
@@ -72,32 +84,48 @@ export default function Signup() {
       setShowToast(true);
       return false;
     }
+    const nameRegex = /^[a-zA-Z]+$/;
+    if (!nameRegex.test(formData.name)) {
+      setToastMessage("El nombre debe contener solo letras");
+      setShowToast(true);
+      return false;
+    }
+    const lastNameRegex = /^[a-zA-Z]+$/;
+    if (!lastNameRegex.test(formData.lastName)) {
+      setToastMessage("El apellido debe contener solo letras");
+      setShowToast(true);
+      return false;
+    }
     const cuilRegex = /^(\d{2}[-\s.]?\d{8}[-\s.]?\d{1})$/;
-    if (!cuilRegex.test(formData.cuil.replace(/[-.\s]/g, ''))) {
+    if (!cuilRegex.test(formData.cuil.replace(/[-.\s]/g, ""))) {
       setToastMessage("El CUIL/CUIT debe tener 8 dígitos");
       setShowToast(true);
       return false;
     }
     const phoneRegex = /^(?:\+?54\s?)?(?:[-\s]?\d){10,}$/;
-    const cleanPhone = formData.telefono.replace(/[-+\s]/g, '');
+    const cleanPhone = formData.telefono.replace(/[-+\s]/g, "");
     if (!phoneRegex.test(formData.telefono) || cleanPhone.length < 10) {
       setToastMessage("El teléfono debe tener al menos 10 dígitos");
       setShowToast(true);
       return false;
     }
-    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/;
     const date = formData.birthDate.split("/");
     if (!dateRegex.test(formData.birthDate) || date.length !== 3) {
-      setToastMessage("La fecha de nacimiento debe ser en formato dd/mm/yyyy");
+      setToastMessage("La fecha de nacimiento debe ser en formato yyyy/mm/dd");
       setShowToast(true);
       return false;
     }
-    if (date[0] > 31 || date[1] > 12 || date[2] > 2025) {
+    if (date[0] > new Date().getFullYear() || date[1] > 12 || date[2] > 31) {
       setToastMessage("La fecha de nacimiento no es válida");
       setShowToast(true);
       return false;
     }
-
+    if (formData.zipcode.length < 4) {
+      setToastMessage("El código postal debe tener al menos 4 dígitos");
+      setShowToast(true);
+      return false;
+    }
     if (formData.password.length < 8) {
       setToastMessage("La contraseña debe tener al menos 8 caracteres");
       setShowToast(true);
@@ -113,10 +141,9 @@ export default function Signup() {
 
   const handleSignup = async () => {
     if (!validateForm()) return;
-  
+
     setIsLoading(true);
-  
-    dispatch(
+    await dispatch(
       registerInAsync({
         data: {
           email: formData.email,
@@ -139,8 +166,10 @@ export default function Signup() {
         console.log("Registro exitoso");
         router.push("/(auth)/codeSecurity");
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log("error del register", error);
         setShowToast(true);
+        setToastMessage("Error al registrar el usuario");
       });
   };
 
@@ -161,28 +190,33 @@ export default function Signup() {
       )}
 
       <ScrollView
-         contentContainerStyle={styles.scrollContent}
-         showsVerticalScrollIndicator={false}
-         pointerEvents={isLoading ? "none" : "auto"}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        pointerEvents={isLoading ? "none" : "auto"}
       >
         <View className="flex-1 p-5">
           <View className="mb-5 mt-10">
-            <Text 
+            <Text
               className="text-white text-2xl text-center mb-2"
               style={{ fontFamily: FONTS.SEMIBOLD }}
             >
               Registrarse
             </Text>
-            <Text 
+            <Text
               className="text-white text-sm text-center"
               style={{ fontFamily: FONTS.REGULAR }}
             >
               Crea una cuenta personal para acceder a todos nuestros beneficios.
             </Text>
-            <Pressable className="border-[#7CBA47] border-2  bg-transparent mt-4 font-poppins_regular p-4 rounded-[10px] items-center flex-row justify-center">
-              <Image source={google_icon} className="w-6 h-6 mr-2" />
-              <Text className="text-[#F5F5F5]">Registrarse con Google</Text>
-            </Pressable>
+            <TouchableOpacity className="mt-12 flex-row items-center border-2 border-[#7CBA47] px-5 py-4 rounded-xl w-full justify-center">
+              <Image source={images.google_logo} className="w-6 h-6 mr-2" />
+              <Text
+                className="text-base text-white"
+                style={{ fontFamily: FONTS.REGULAR }}
+              >
+                Registrarse con Google
+              </Text>
+            </TouchableOpacity>
             <View className="flex-row items-center w-full mt-8">
               <View className="flex-1 h-[3px] bg-[#79C72B] opacity-50" />
               <Text className="text-[#79C72B] opacity-80 px-2">o</Text>
@@ -195,7 +229,7 @@ export default function Signup() {
               Nombre
             </Text>
             <View className="relative mb-6">
-              <TextInput 
+              <TextInput
                 className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="Juan"
@@ -210,7 +244,7 @@ export default function Signup() {
               Apellido
             </Text>
             <View className="relative mb-6">
-              <TextInput 
+              <TextInput
                 className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
                 placeholder="Martinez"
@@ -246,7 +280,7 @@ export default function Signup() {
               <TextInput
                 className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
-                placeholder="12.345.678"
+                placeholder="12.34567890.1"
                 placeholderTextColor="#A9A9A9"
                 value={formData.cuil}
                 onChangeText={(text) =>
@@ -260,10 +294,10 @@ export default function Signup() {
               Fecha de nacimiento
             </Text>
             <View className="relative mb-6">
-              <TextInput 
+              <TextInput
                 className="bg-[#004D56] text-white text-sm p-4 rounded-[10px] border-[#7CBA47] border-2 h-[60px]"
                 style={{ fontFamily: FONTS.REGULAR }}
-                placeholder="12/01/1990"
+                placeholder="1990/01/12"
                 placeholderTextColor="#A9A9A9"
                 value={formData.birthDate}
                 keyboardType="numeric"
@@ -370,10 +404,10 @@ export default function Signup() {
 
       <View className="p-5">
         <TouchableOpacity
-          className="bg-[#7CBA47] p-4 rounded-[10px] items-center mb-5"
+          className="bg-ex-secondary p-4 rounded-[10px] items-center mb-5"
           onPress={handleSignup}
         >
-          <Text className="text-white text-sm font-poppins_semibold">
+          <Text className="text-ex-primary text-sm font-poppins_semibold">
             Registrarse
           </Text>
         </TouchableOpacity>
